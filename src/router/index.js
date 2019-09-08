@@ -136,6 +136,9 @@ router.beforeEach((to, from, next) => {
     next()
   }*/
 
+  if (to.path === '/') {
+    next({path: '/login'})
+  }
 
   // /!* 路由发生变化修改页面title *!/
   if (to.meta.title) {
