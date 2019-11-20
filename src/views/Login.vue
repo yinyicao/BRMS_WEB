@@ -153,7 +153,7 @@
             //获取用户信息存储到全局变量中
             this.$store.dispatch('getUserInfo', id).then(res => {
 
-              this.$router.replace('/main/bookList');
+              this.$router.replace('/main/index');
             });
 
           } else {

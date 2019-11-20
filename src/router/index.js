@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import {getToken, removeToken} from '../utils/auth'
 import Layout from '../components/layout'
 import reportsRouter from '../views/reports/reportsRouter'
+import retailRouter from '../views/retailstore/retailRouter'
 
 Vue.use(Router);
 
@@ -29,6 +30,12 @@ const router = new Router({
       meta: {title: '主页'},
       children: [
         {
+          path: 'index',
+          name: '主页',
+          meta: {title: '图书零售管理系统', icon: 'el-icon-s-home'},
+          component: () => import( '../views/main')
+        },
+        {
           path: 'bookList',
           name: '图书信息管理',
           meta: {title: '图书列表', icon: 'el-icon-s-management'},
@@ -37,6 +44,15 @@ const router = new Router({
           // which is lazy-loaded when the route is visited.
           component: () => import(/* webpackChunkName: "about" */ '../views/bookList')
         },
+        {
+          path: 'store',
+          name: '零售系统管理',
+          meta: {title: '图书零售管理', icon: 'el-icon-s-shop'},
+          component: Layout,
+          children: [
+            ...retailRouter
+          ]
+          },
         {
           path: 'reports',
           name: '报表统计视图',
@@ -64,17 +80,17 @@ const router = new Router({
               component: () => import(/* webpackChunkName: "about" */ '../views/setting/user-list-setting')
             },
             {
-              path: 'project-setting',
-              name: '待完成',
-              meta: {title: 'project', icon: 'el-icon-goods'},
-              component: () => import(/* webpackChunkName: "about" */ '../views/setting/project-setting')
-            },
-            {
               path: 'user-editOrAdd:id',
               name: 'user-editOrAdd',
-              meta: {title: 'edit user'},
+              meta: {title: '用户账号设置'},
               hidden: true,
               component: () => import(/* webpackChunkName: "about" */ '../views/setting/user-editOrAdd')
+            },
+            {
+              path: 'rolePermission-setting',
+              name: '角色权限配置',
+              meta: {title: '角色权限配置', icon: 'el-icon-s-check'},
+              component: () => import(/* webpackChunkName: "about" */ '../views/setting/project-setting')
             },
           ]
         },
