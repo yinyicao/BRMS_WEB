@@ -32,7 +32,7 @@ const router = new Router({
         {
           path: 'index',
           name: '主页',
-          meta: {title: '图书零售管理系统', icon: 'el-icon-s-home'},
+          meta: {title: '图书分销管理系统', icon: 'el-icon-s-home'},
           component: () => import( '../views/main')
         },
         {
@@ -46,8 +46,8 @@ const router = new Router({
         },
         {
           path: 'store',
-          name: '零售系统管理',
-          meta: {title: '图书零售管理', icon: 'el-icon-s-shop'},
+          name: '分销系统管理',
+          meta: {title: '图书分销管理', icon: 'el-icon-s-shop'},
           component: Layout,
           children: [
             ...retailRouter

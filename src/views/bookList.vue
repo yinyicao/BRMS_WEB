@@ -413,14 +413,11 @@
         })
 
       },
-          refreshTable()
-        {
+      refreshTable(){
           this.searchForm = {};
           this.getBookList();
-        }
-      ,
-        onSubmit(dialogForm)
-        {
+        },
+      onSubmit(dialogForm){
           this.$refs[dialogForm].validate((valid) => { //表单验证
             if (valid) {
               if (this.dialogStatus === '添加') {//表单状态是添加
@@ -449,26 +446,20 @@
               return false;
             }
           });
-        }
-      ,
-        addRow()
-        {
+        },
+      addRow(){
           this.dialogFormVisible = true;
           this.dialogStatus = '添加';
           this.dialogForm = {};//清空表单
           // this.dialogForm.bookRepertorySize = 10;
 
-        }
-      ,
-        editRow(item)
-        {
+        },
+      editRow(item){
           this.dialogFormVisible = true;
           this.dialogStatus = '编辑';
           this.dialogForm = item;
-        }
-      ,
-        delRow(item)
-        {
+        },
+      delRow(item){
           this.$confirm('此操作将永久删除该条图书信息, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -491,18 +482,13 @@
               message: '已取消删除'
             });
           });
-        }
-      ,
-
-        //分页查询
-        handleCurrentChange(val)
-        {
+        },
+      //分页查询
+      handleCurrentChange(val){
           this.page.currentPage = val
           this.getBookList()
-        }
-      ,
-        getBookList()
-        {
+      },
+      getBookList(){
           let obj = {
             searchItem: this.searchForm.item,
             searchValue: this.searchForm.value,
