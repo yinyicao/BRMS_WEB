@@ -1,5 +1,6 @@
 <template>
   <div>
+    <img :src="src"  :style="{height: logoHeight+'px',width: logoWidth+'%',marginLeft: logoMarginLeft+'px'}">
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu router :default-active="$route.path" mode="vertical"
                :collapse="isCollapse"
@@ -14,17 +15,34 @@
 
 <script>
   import MenuTree from './menu-tree'
+
+  import logo1 from '../assets/logo1.png'
+  import logo2 from '../assets/logo2.png'
   export default {
     name: 'sidebar',
     components: {MenuTree},
     data() {
       return {
         number: true,
+        src:logo1,
+        logoHeight:50,
+        logoWidth:100,
+        logoMarginLeft:20
       }
     },
     computed: {
       isCollapse() {
-        console.log("123123123123123213")
+        if(this.$store.state.opened){
+          this.src = logo1;
+          this.logoHeight = 50;
+          this.logoWidth = 90;
+          this.logoMarginLeft = 20;
+        }else{
+          this.src = logo2;
+          this.logoHeight = 50;
+          this.logoWidth = 90;
+          this.logoMarginLeft = 0;
+        }
         return !this.$store.state.opened
       },
     },
