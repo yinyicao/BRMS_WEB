@@ -24,6 +24,7 @@
     },
     computed: {
       isCollapse() {
+        console.log("123123123123123213")
         return !this.$store.state.opened
       },
     },

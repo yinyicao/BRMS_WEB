@@ -47,7 +47,7 @@ const router = new Router({
         {
           path: 'store',
           name: '分销系统管理',
-          meta: {title: '图书分销管理', icon: 'el-icon-s-shop'},
+          meta: {title: '分销系统管理', icon: 'el-icon-s-shop'},
           component: Layout,
           children: [
             ...retailRouter
