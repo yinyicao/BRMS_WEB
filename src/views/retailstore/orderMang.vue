@@ -19,13 +19,13 @@
         <el-table-column
           prop="bookName"
           label="书名"
-          width="150px"
+          width="140px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="disName"
           label="分销商"
-          width="180px"
+          width="170px"
           align="center">
         </el-table-column>
         <el-table-column
@@ -62,14 +62,12 @@
               type="primary"
               icon="el-icon-edit"
               size="small">
-              修改状态
             </el-button>
             <el-button
               @click.native.prevent="delRow(scope.row)"
               type="danger"
               icon="el-icon-delete"
               size="small">
-              取消订单
             </el-button>
 
           </template>
@@ -189,7 +187,7 @@
         //分页查询
         handleCurrentChange(val){
           this.page.currentPage = val
-          this.getBookList()
+          this.getOrderList()
         },
       }
 
