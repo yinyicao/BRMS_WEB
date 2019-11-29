@@ -15,25 +15,28 @@
       },
       methods: {
         getBookOrdersData() {
-          // let legendData = []
-          // let seriesData = []
-          // this.$http.post('getBookCategoryData', null).then(res => {
-          //   res.data.map(item => {
-          //     legendData.push(item.bookCategory)  // 类别
-          //     seriesData.push({
-          //       name: item.bookCategory,
-          //       value: item.bookNumber
-          //     }) // 数量
-          //     return item
-          //   })
-          //   this.initCharts(legendData, seriesData);
-          // })
-          var orderNumbers = [120, 132, 101, 134, 90, 230, 210];
-          var orderBookNumbers=[120*2, 132*1, 101*3, 134*5, 90*3, 230*1, 210*2];
-          this.initCharts(orderNumbers,orderBookNumbers);
+          let legendData = []
+          let seriesData = []
+          this.$http.post('getDisOrderInterval7DayData', null).then(res => {
+            let that = this // 传递this对象
+            let dates = []
+            res.data.date.forEach(function (e) {
+              let date = that.$timeFormat(new Date(e),"yyyy-MM-dd")
+              dates.push(date)
+            })
+            let orderBookNumbers = res.data.orderBookNumbers
+            let orderNumbers = res.data.orderNumbers
+            this.initCharts(orderNumbers,orderBookNumbers,dates);
+          })
+          // 模拟数据
+          // var orderNumbers = [120, 132, 101, 134, 90, 230, 210];
+          // var orderBookNumbers=[120*2, 132*1, 101*3, 134*5, 90*3, 230*1, 210*2];
+          // var dates = ["2019-11-22","2019-11-23","2019-11-24","2019-11-25","2019-11-26",
+          //   "2019-11-27","2019-11-28","2019-11-29"]
+          // this.initCharts(orderNumbers,orderBookNumbers,dates);
         },
 
-        initCharts(orderNumbers,orderBookNumbers) {
+        initCharts(orderNumbers,orderBookNumbers,dates) {
 
           // 基于准备好的dom，初始化echarts实例
           var myChart = this.$echarts.init(this.$refs.chart);
@@ -41,7 +44,7 @@
           // 数据
           var options = {
             title: {
-              text: '近7天动态订单数据（模拟）'
+              text: '近7天动态订单数据'
             },
             tooltip: {
               trigger: 'axis'
@@ -63,7 +66,7 @@
             xAxis: {
               type: 'category',
               boundaryGap: false,
-              data: ['周一','周二','周三','周四','周五','周六','周日']
+              data: dates
             },
             yAxis: {
               type: 'value'
