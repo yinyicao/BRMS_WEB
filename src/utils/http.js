@@ -53,6 +53,12 @@ axios.interceptors.response.use(
           removeToken();
           router.replace('/login');
           break;
+        case 500:
+          Msg.error("网络错误！")
+          break;
+        case 404:
+
+          break;
       }
     }
     return Promise.reject(error.response.data)   // 返回接口返回的错误信息
