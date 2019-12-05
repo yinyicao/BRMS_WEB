@@ -72,7 +72,7 @@
           align="center">
         </el-table-column>
         <el-table-column
-          prop="bookCategory"
+          prop="categoryName"
           label="类别"
           width="70px"
           align="center">
@@ -97,7 +97,7 @@
           align="center">
         </el-table-column>
         <el-table-column
-          prop="bookPub"
+          prop="pubName"
           label="出版社"
           align="center">
         </el-table-column>
@@ -206,7 +206,7 @@
   import Utils from '../utils/ev-utils'
 
   export default {
-    name: 'clock-out',
+    name: 'bookList',
     components: {ProjectSelect, UserlistSelect},
     data() {
       let validateAuthor = (rule, value, callback) => { //作者字段自定义验证规则
@@ -230,38 +230,38 @@
       return {
         searchForm:{},
         bookCategoryOptions: [{
-          value: '计算机',
+          value: 1,
           label: '计算机'
         }, {
-          value: '英语',
+          value: 2,
           label: '英语'
         }, {
-          value: '数学',
+          value: 6,
           label: '数学'
         }, {
-          value: '美术',
+          value: 7,
           label: '美术'
         }, {
-          value: '人文',
+          value: 4,
           label: '人文'
         }, {
-          value: '地理',
+          value: 8,
           label: '地理'
         }],
         bookPubOptions: [{
-          value: '重庆理工大学出版社',
+          value: 4,
           label: '重庆理工大学出版社'
         }, {
-          value: '重庆电子工业出版社',
+          value: 1,
           label: '重庆电子工业出版社'
         }, {
-          value: '重庆博文图书出版社',
+          value: 3,
           label: '重庆博文图书出版社'
         }, {
-          value: '江苏南京出版社',
+          value: 2,
           label: '江苏南京出版社'
         }, {
-          value: '北京合作共赢出版社',
+          value: 5,
           label: '北京合作共赢出版社'
         }],
         fullscreenLoading: false,
@@ -295,7 +295,7 @@
           ],
           bookCategory: [
             // {type: 'string', required: true, message: '请输入类别', trigger: 'change'}
-            {type: 'string', required: true, message: '请输入类别'}
+            {type: 'number', required: true, message: '请输入类别'}
           ],
           bookPrice: [
             // {required: true, message: '请输入价格', trigger: 'blur'}
@@ -309,7 +309,7 @@
             {required: true, message: '请输入库存'}
           ],
           bookPub: [
-            {type: 'string', required: true, message: '请输入出版社'}
+            {type: 'number', required: true, message: '请输入出版社'}
           ]
         }
       }
@@ -455,9 +455,14 @@
 
         },
       editRow(item){
+          // 初始化表单数据
+          this.dialogForm = item;
+          // this.dialogForm.bookPub = item.pubName;
+          // // this.$delete(this.dialogForm,'pubName');
+          // // delete this.dialogForm.pubName;
+
           this.dialogFormVisible = true;
           this.dialogStatus = '编辑';
-          this.dialogForm = item;
         },
       delRow(item){
           this.$confirm('此操作将永久删除该条图书信息, 是否继续?', '提示', {
