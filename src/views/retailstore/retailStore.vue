@@ -32,7 +32,7 @@
           align="center">
         </el-table-column>
         <el-table-column
-          prop="bookCategory"
+          prop="categoryName"
           label="类别"
           width="100px"
           align="center">
@@ -57,7 +57,7 @@
           align="center">
         </el-table-column>
         <el-table-column
-          prop="bookPub"
+          prop="pubName"
           label="出版社"
           align="center">
         </el-table-column>
@@ -110,7 +110,11 @@
                      size="small"
                      style="width: 290px"
                      :filterable= "true"
-                     :clearable = "true">
+                     v-on:visible-change="querySelectDis"
+                     :clearable = "true"
+                     :loading="disSelectLoading"
+                     loading-text="加载中..."
+            >
             <el-option
               v-for="item in distributorsOptions"
               :key="item.value"
@@ -154,12 +158,8 @@
             },
             json_data: []
           },
-          distributorsOptions:[
-            {
-              value: 1,
-              label: '重庆巴南区分销总部'
-            }
-          ],
+          disSelectLoading:false,
+          distributorsOptions:[],
           dialogFormVisible: false,
           formLabelWidth: '110px',
           list: [],
@@ -258,6 +258,19 @@
             this.page.total = res.data.total
             this.bookList = list
           })
+        },
+        querySelectDis(isCollapse){
+          // console.log(isCollapse)
+          if (isCollapse && ! this.distributorsOptions.length){
+            this.disSelectLoading = true;
+            this.$http.get('getSelectValueAndLabel').then(res => {
+              this.distributorsOptions = res.data
+            }).finally(()=>{
+              this.disSelectLoading = false;
+            })
+          } else{
+            this.disSelectLoading = false;
+          }
         }
       }
     }
