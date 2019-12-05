@@ -138,7 +138,7 @@
         this.loading = true;
 
         this.$http.post('/main/login', obj).then(res => {
-          console.log(res)
+          // console.log(res)
           this.loading = false
           if (res.code === 10001) { //登录成功
             Msg.success(res.msg)

@@ -58,7 +58,7 @@
           .then(() => {
             this.$store.dispatch('removeStorage')
             const remove = removeToken()
-            console.log(remove)
+            // console.log(remove)
             this.$router.replace('/')
           })
           .catch(_ => {

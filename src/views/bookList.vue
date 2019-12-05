@@ -145,7 +145,11 @@
                      size="small"
                      style="width: 290px"
                      :filterable= "true"
-                     :clearable = "true">
+                     :clearable = "true"
+                     v-on:visible-change="querySelectBookCategory"
+                     :loading="bookCategorySelectLoading"
+                     loading-text="加载中..."
+             >
             <el-option
               v-for="item in bookCategoryOptions"
               :key="item.value"
@@ -168,7 +172,11 @@
                      :filterable= "true"
                      :clearable = "true"
                      size="small"
-                     style="width: 290px">
+                     style="width: 290px"
+                     v-on:visible-change="querySelectBookPub"
+                     :loading="bookPubSelectLoading"
+                     loading-text="加载中..."
+            >
             <el-option
               v-for="item in bookPubOptions"
               :key="item.value"
@@ -229,41 +237,8 @@
       };
       return {
         searchForm:{},
-        bookCategoryOptions: [{
-          value: 1,
-          label: '计算机'
-        }, {
-          value: 2,
-          label: '英语'
-        }, {
-          value: 6,
-          label: '数学'
-        }, {
-          value: 7,
-          label: '美术'
-        }, {
-          value: 4,
-          label: '人文'
-        }, {
-          value: 8,
-          label: '地理'
-        }],
-        bookPubOptions: [{
-          value: 4,
-          label: '重庆理工大学出版社'
-        }, {
-          value: 1,
-          label: '重庆电子工业出版社'
-        }, {
-          value: 3,
-          label: '重庆博文图书出版社'
-        }, {
-          value: 2,
-          label: '江苏南京出版社'
-        }, {
-          value: 5,
-          label: '北京合作共赢出版社'
-        }],
+        bookCategoryOptions: [],
+        bookPubOptions: [],
         fullscreenLoading: false,
         fullscreenLoadingText: '正在加载导出数据...',
         outputData: {
@@ -277,6 +252,8 @@
           },
           json_data: []
         },
+        bookCategorySelectLoading:false,
+        bookPubSelectLoading:false,
         dialogFormVisible: false,
         formLabelWidth: '110px',
         dialogStatus: "",
@@ -318,6 +295,32 @@
       this.getBookList()
     },
     methods: {
+      querySelectBookPub(isCollapse){
+        if (isCollapse && this.bookPubOptions.length <=1){
+          this.bookPubOptions = []//清空，否者有数据不加载
+          this.bookPubSelectLoading = true;
+          this.$http.get('getPublisherServiceSelectValueAndLabel').then(res => {
+            this.bookPubOptions = res.data
+          }).finally(()=>{
+            this.bookPubSelectLoading = false;
+          })
+        } else{
+          this.bookPubSelectLoading = false;
+        }
+      },
+      querySelectBookCategory(isCollapse){
+        if (isCollapse && this.bookCategoryOptions.length <=1){
+          this.bookCategoryOptions = []//清空，否者有数据不加载
+          this.bookCategorySelectLoading = true;
+          this.$http.get('getBookCategoryMetaValueAndLabel').then(res => {
+            this.bookCategoryOptions = res.data
+          }).finally(()=>{
+            this.bookCategorySelectLoading = false;
+          })
+        } else{
+          this.bookCategorySelectLoading = false;
+        }
+      },
       async fetchData() {
         let obj = {
           currentPage: 0,
@@ -460,9 +463,20 @@
           // this.dialogForm.bookPub = item.pubName;
           // // this.$delete(this.dialogForm,'pubName');
           // // delete this.dialogForm.pubName;
-
+          //初始化Select控件的Options数组，否者初次显示不正常
+        if(this.bookCategoryOptions.length === 0 && this.bookPubOptions.length === 0){
+          let bco = {},bpo = {}
+          bco.value = item.bookCategory
+          bco.label = item.categoryName
+          bpo.value = item.bookPub
+          bpo.label = item.pubName
+          this.bookCategoryOptions.push(bco)
+          this.bookPubOptions.push(bpo)
+        }
+          //显示表单
           this.dialogFormVisible = true;
           this.dialogStatus = '编辑';
+
         },
       delRow(item){
           this.$confirm('此操作将永久删除该条图书信息, 是否继续?', '提示', {
