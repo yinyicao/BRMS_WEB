@@ -263,7 +263,7 @@
           // console.log(isCollapse)
           if (isCollapse && ! this.distributorsOptions.length){
             this.disSelectLoading = true;
-            this.$http.get('getSelectValueAndLabel').then(res => {
+            this.$http.get('getDistributorSelectValueAndLabel').then(res => {
               this.distributorsOptions = res.data
             }).finally(()=>{
               this.disSelectLoading = false;
