@@ -13,9 +13,9 @@
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="loginForm.loginname"
           placeholder="Username"
-          name="username"
+          name="loginname"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -87,8 +87,9 @@
       }
       return {
         loginForm: {
-          username: 'admin',
-          password: '111111'
+          loginname: 'admin',
+          password: 'a123456',
+          rememberme: false
         },
         loginRules: {
           username: [{required: true, trigger: 'blur', validator: validateUsername}],
@@ -134,24 +135,24 @@
       },
       handleLogin() {
         let obj = JSON.parse(JSON.stringify(this.loginForm));
-        obj.password = MD5(obj.password);
+        // obj.password = MD5(obj.password);
         this.loading = true;
 
         this.$http.post('/main/login', obj).then(res => {
           // console.log(res)
           this.loading = false
-          if (res.code === 10001) { //登录成功
+          if (res.code === 2000) { //登录成功
             Msg.success(res.msg)
-            if (setToken(res.data.token)){//浏览器Cookies开启，存储成功
-              //将Token设置到每次请求的header中
-              axios.defaults.headers.common['Token'] =  getToken();
-            } else {
-              axios.defaults.headers.common['Token'] =  res.data.token;
-            }
-            let id = res.data.user.id;
-
+            // if (setToken(res.data.token)){//浏览器Cookies开启，存储成功
+            //   //将Token设置到每次请求的header中
+            //   axios.defaults.headers.common['Token'] =  getToken();
+            // } else {
+            //   axios.defaults.headers.common['Token'] =  res.data.token;
+            // }
+            // let id = res.data.user.id;
+            let data = res.data;
             //获取用户信息存储到全局变量中
-            this.$store.dispatch('getUserInfo', id).then(res => {
+            this.$store.dispatch('getUserInfo', data).then(res => {
 
               this.$router.replace('/main/index');
             });

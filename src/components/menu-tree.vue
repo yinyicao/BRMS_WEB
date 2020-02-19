@@ -35,9 +35,10 @@
     },
     methods: {
       isAdminShow(meta) {
-        // if (meta.role && this.$store.state.userinfo.role !== meta.role) {
-        //   return false
-        // }
+        if (meta.role && this.$store && this.$store.state && this.$store.state.userinfo
+          && !this.$store.state.userinfo.rolenames.includes(meta.role)) {
+          return false
+        }
         return true
       }
     }

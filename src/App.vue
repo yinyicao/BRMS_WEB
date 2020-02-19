@@ -8,6 +8,7 @@
   export default {
     name: 'App',
     mounted () {
+      console.log("mounted method is running in App.vue file.")
       this.$store.getters.getStorage
     }
   }

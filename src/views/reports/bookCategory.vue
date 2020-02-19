@@ -23,7 +23,7 @@
         getBookCategoryData() {
           let legendData = []
           let seriesData = []
-          this.$http.post('getBookCategoryData', null).then(res => {
+          this.$http.post('book/getBookCategoryData', null).then(res => {
             res.data.map(item => {
               legendData.push(item.bookCategory)  // 类别
               seriesData.push({

@@ -15,8 +15,9 @@ const store = new Vuex.Store({
   },
   getters: {
     getStorage(state) {
+      console.log("getStorage--->has state.userinfo:"+!state.userinfo)
       if (!state.userinfo) {
-        state.userinfo = JSON.parse(localStorage.getItem('userinfo'))
+        state.userinfo = JSON.parse(sessionStorage.getItem('userinfo'))
       }
       return state.userinfo
     }

@@ -57,8 +57,6 @@
         this.$confirm('Confirm Log Out ?')
           .then(() => {
             this.$store.dispatch('removeStorage')
-            const remove = removeToken()
-            // console.log(remove)
             this.$router.replace('/')
           })
           .catch(_ => {

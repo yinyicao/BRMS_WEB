@@ -1,11 +1,13 @@
 import axios from 'axios'
 import qs from 'qs';
-import {getToken,removeToken} from './auth'
 import router from '../router/index'
 import {Msg} from './MessageTipsUtil'
+import store from "../store";
 
 // Set config defaults when creating the instance
 axios.defaults.baseURL = 'http://127.0.0.1:8081/SSM_war/'
+// 请求带上cookies
+axios.defaults.withCredentials = true
 //获取Token值为undefined,是因为这个语句在登录操作之前运行（main.js导入http.js，而main又是程序的入口-最开始执行）
 //所以获取不到Token?
 // axios.defaults.headers.common['Token'] =  getToken();
@@ -46,12 +48,18 @@ axios.interceptors.response.use(
   },
   error => {
     if (error.response) {
+      let resData = error.response.data;
       switch (error.response.status) {
         case 401:
-          // 返回 401 清除token信息并跳转到登录页面
-          Msg.error("身份信息失效，请重新登录！")
-          removeToken();
-          router.replace('/login');
+          if (resData.code == 2002){//未登录授权
+            Msg.warn(resData.msg)
+            // 清除信息并跳转到登录页面
+            store.dispatch("removeStorage").then(r => {
+              router.replace('/login');
+            })
+          }else{ //没有权限操作
+            Msg.warn(resData.msg)
+          }
           break;
         case 500:
           Msg.error("网络错误！")

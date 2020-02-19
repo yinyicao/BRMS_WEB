@@ -24,7 +24,7 @@
         let bookPub = []
         let bookNumbers = []
         let bookCategoryNumbers=[]
-        this.$http.post('getBookPressData', null).then(res => {
+        this.$http.post('book/getBookPressData', null).then(res => {
           res.data.map(item => {
             bookPub.push(item.bookPub)  // 出版社
             bookNumbers.push(item.bookNumber) // 数量

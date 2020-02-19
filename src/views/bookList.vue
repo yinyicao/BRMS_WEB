@@ -351,11 +351,12 @@
       },
       startDownload() {
         this.fullscreenLoading = true;
+
       },
       finishDownload() {
         setTimeout(() => { //简单的设置一下，显示加载页面，不然岂不是白写了？哈哈哈
           this.fullscreenLoading = false;
-        }, 300)
+        }, 1000)
 
       },
       readExcel(file) { //导入数据并解析
@@ -514,7 +515,7 @@
             currentPage: this.page.currentPage,
             pageSize: this.page.pageSize,
           }
-          this.$http.post('getBookList', obj).then(res => {
+          this.$http.post('book/getBookList', obj).then(res => {
             let list = res.data.result.map(item => {
               return item
             })

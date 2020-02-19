@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '../views/Login.vue'
-import {getToken, removeToken} from '../utils/auth'
 import Layout from '../components/layout'
 import reportsRouter from '../views/reports/reportsRouter'
 import retailRouter from '../views/retailstore/retailRouter'
@@ -68,12 +67,12 @@ const router = new Router({
           path: 'setting',
           name: '设置',
           component: Layout,
-          meta: {title: '设置', icon: 'el-icon-setting'},
+          meta: {title: '设置', icon: 'el-icon-setting',role:'admin'},
           children: [
             {
               path: 'user-list-setting',
               name: '用户账号设置',
-              meta: {title: '用户账号设置', icon: 'el-icon-user'},
+              meta: {title: '用户账号设置', icon: 'el-icon-user',role:'admin'},
               // route level code-splitting
               // this generates a separate chunk (about.[hash].js) for this route
               // which is lazy-loaded when the route is visited.
@@ -82,14 +81,14 @@ const router = new Router({
             {
               path: 'user-editOrAdd:id',
               name: 'user-editOrAdd',
-              meta: {title: '用户账号设置'},
+              meta: {title: '用户账号设置',role:'admin'},
               hidden: true,
               component: () => import(/* webpackChunkName: "about" */ '../views/setting/user-editOrAdd')
             },
             {
               path: 'rolePermission-setting',
               name: '角色权限配置',
-              meta: {title: '角色权限配置', icon: 'el-icon-s-check'},
+              meta: {title: '角色权限配置', icon: 'el-icon-s-check',role:'admin'},
               component: () => import(/* webpackChunkName: "about" */ '../views/setting/project-setting')
             },
           ]
@@ -152,8 +151,18 @@ router.beforeEach((to, from, next) => {
     next()
   }*/
 
+
   if (to.path === '/') {
     next({path: '/login'})
+  }else if(to.meta.role === 'admin' && store && store.state && store.state.userinfo){
+    let isAdmin = store.state.userinfo.rolenames.includes('admin');
+    if (!isAdmin){//没有admin角色
+      next('/no-permission')
+    }else{
+      next()
+    }
+  }else{
+    next()
   }
 
   // /!* 路由发生变化修改页面title *!/
