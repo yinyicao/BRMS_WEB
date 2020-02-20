@@ -110,7 +110,7 @@
           this.orderEndDateIsShow = false;//初始化
 
           // 请求数据
-          this.$http.post('getOrderList',obj).then(res => {
+          this.$http.post('disOrder/getOrderList',obj).then(res => {
             let list = res.data.result.map(item => {
               //格式化时间
               item.orderDate = this.$timeFormat(new Date(item.orderDate))
@@ -132,7 +132,7 @@
           }).then(() => {
             let obj = {}
             obj.id = item.id
-            this.$http.post('modifyOrderStatus', obj).then(res => {
+            this.$http.post('disOrder/modifyOrderStatus', obj).then(res => {
               if (res.code === 10008) {
                 this.getOrderList();
                 this.$message({
@@ -162,7 +162,7 @@
           }).then(() => {
             let obj = {}
             obj.id = item.id
-            this.$http.post('cancelOrder', obj).then(res => {
+            this.$http.post('disOrder/cancelOrder', obj).then(res => {
               if (res.code === 10009) {
                 this.getOrderList();
                 this.$message({

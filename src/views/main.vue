@@ -17,7 +17,7 @@
         getBookOrdersData() {
           let legendData = []
           let seriesData = []
-          this.$http.post('getDisOrderInterval7DayData', null).then(res => {
+          this.$http.post('disOrder/getDisOrderInterval7DayData', null).then(res => {
             let that = this // 传递this对象
             let dates = []
             res.data.date.forEach(function (e) {

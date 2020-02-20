@@ -299,7 +299,7 @@
         if (isCollapse && this.bookPubOptions.length <=1){
           this.bookPubOptions = []//清空，否者有数据不加载
           this.bookPubSelectLoading = true;
-          this.$http.get('getPublisherServiceSelectValueAndLabel').then(res => {
+          this.$http.get('publisher/getPublisherServiceSelectValueAndLabel').then(res => {
             this.bookPubOptions = res.data
           }).finally(()=>{
             this.bookPubSelectLoading = false;
@@ -312,7 +312,7 @@
         if (isCollapse && this.bookCategoryOptions.length <=1){
           this.bookCategoryOptions = []//清空，否者有数据不加载
           this.bookCategorySelectLoading = true;
-          this.$http.get('getBookCategoryMetaValueAndLabel').then(res => {
+          this.$http.get('book/getBookCategoryMetaValueAndLabel').then(res => {
             this.bookCategoryOptions = res.data
           }).finally(()=>{
             this.bookCategorySelectLoading = false;
@@ -326,7 +326,7 @@
           currentPage: 0,
           pageSize: 0,
         }
-        await this.$http.post('getBookList', obj).then(res => {
+        await this.$http.post('book/getBookList', obj).then(res => {
           let list = res.data.result.map(item => {
             return item
           })
@@ -407,7 +407,7 @@
           obj.bookPub = data[i].出版社
           datas.bookList.push(JSON.stringify(obj))
         }
-        this.$http.post('importBookListData', datas).then(res => {
+        this.$http.post('book/importBookListData', datas).then(res => {
             if(res.code === 10006){
               this.$message.success("解析到 "+datas.bookList.length+" 条数据，导入成功 "+res.data+" 条数据！");
               this.getBookList();//刷新数据
@@ -425,7 +425,7 @@
           this.$refs[dialogForm].validate((valid) => { //表单验证
             if (valid) {
               if (this.dialogStatus === '添加') {//表单状态是添加
-                this.$http.post('addBook', this.dialogForm).then(res => {
+                this.$http.post('book/addBook', this.dialogForm).then(res => {
                   if (res.code === 10005) {
                     this.dialogFormVisible = false, this.getBookList();
                     this.$message.success(res.msg)
@@ -435,7 +435,7 @@
 
                 })
               } else {//编辑
-                this.$http.post('modifyBook', this.dialogForm).then(res => {
+                this.$http.post('book/modifyBook', this.dialogForm).then(res => {
                   if (res.code === 10004) {
                     this.dialogFormVisible = false,
                       this.getBookList();
@@ -487,7 +487,7 @@
           }).then(() => {
             let obj = {}
             obj.id = item.id
-            this.$http.post('removeBook', obj).then(res => {
+            this.$http.post('book/removeBook', obj).then(res => {
               if (res.code === 10003) {
                 this.getBookList();
               }

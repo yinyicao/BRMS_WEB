@@ -200,7 +200,7 @@
         onSubmit(dialogForm){
           this.$refs[dialogForm].validate((valid) => { //表单验证
             if (valid) {
-                this.$http.post('addOrder', this.dialogForm).then(res => {
+                this.$http.post('disOrder/addOrder', this.dialogForm).then(res => {
                   if (res.code === 10007) {
                     this.dialogFormVisible = false, this.getBookList();
                     this.$message.success(res.msg)
@@ -228,7 +228,7 @@
           }).then(() => {
             let obj = {}
             obj.id = item.id
-            this.$http.post('removeBook', obj).then(res => {
+            this.$http.post('book/removeBook', obj).then(res => {
               if (res.code === 10003) {
                 this.getBookList();
               }
@@ -251,7 +251,7 @@
             currentPage: this.page.currentPage,
             pageSize: this.page.pageSize,
           }
-          this.$http.post('getBookList', obj).then(res => {
+          this.$http.post('book/getBookList', obj).then(res => {
             let list = res.data.result.map(item => {
               return item
             })
@@ -263,7 +263,7 @@
           // console.log(isCollapse)
           if (isCollapse && ! this.distributorsOptions.length){
             this.disSelectLoading = true;
-            this.$http.get('getDistributorSelectValueAndLabel').then(res => {
+            this.$http.get('distributor/getDistributorSelectValueAndLabel').then(res => {
               this.distributorsOptions = res.data
             }).finally(()=>{
               this.disSelectLoading = false;
