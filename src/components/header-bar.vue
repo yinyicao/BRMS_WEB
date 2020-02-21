@@ -27,6 +27,7 @@
 
 <script>
   import {removeToken} from '../utils/auth'
+  import {Msg} from "../utils/MessageTipsUtil";
 
   export default {
     name: 'header-bar',
@@ -54,10 +55,12 @@
         this.$store.commit('toggleState')
       },
       logout() {
-        this.$confirm('Confirm Log Out ?')
+        this.$confirm('确认退出登录？')
           .then(() => {
-            this.$store.dispatch('removeStorage')
-            this.$router.replace('/')
+            this.$http.get('/logout').then(res =>{ //请求登出接口
+                this.$store.dispatch('removeStorage')
+                this.$router.replace('/')
+            })
           })
           .catch(_ => {
           })
