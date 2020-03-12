@@ -1,23 +1,32 @@
 <template>
   <div>
-    <el-button icon="el-icon-back" type="primary" class="m-b-20" @click.native.prevent="returnPage">Return</el-button>
+    <el-button icon="el-icon-back" type="primary" class="m-b-20" @click.native.prevent="returnPage">返回</el-button>
     <el-row>
       <el-col :span="12">
         <el-form :label-position="labelPosition" :rules="rules" label-width="160px" :model="user" ref="user">
-          <el-form-item label="Role" prop="role" style="height: 40px" required>
-            <role-select :value.sync="user.role"/>
-          </el-form-item>
-          <el-form-item label="Username" prop="username" style="height: 40px" required>
+
+          <el-form-item label="登录名" prop="username" style="height: 40px" required>
             <el-input type="text" v-model="user.username" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="Age" style="height: 40px" prop="age">
-            <el-input type="number" v-model="user.age" autocomplete="off"></el-input>
+          <el-form-item label="用户名" style="height: 40px" required>
+            <el-input v-model="user.nickname" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item v-if="showPassEdit" :label="this.passwordText" style="height: 40px" prop="password" required>
             <el-input type="password" v-model="user.password" autocomplete="off" ></el-input>
           </el-form-item>
-          <el-form-item label="Nick Name" style="height: 40px">
-            <el-input v-model="user.nickname" autocomplete="off"></el-input>
+          <el-form-item label="角色" prop="role" style="height: 40px" required>
+            <role-select :value.sync="user.role"/>
+          </el-form-item>
+          <el-form-item label="用户状态" style="height: 40px" prop="state" required>
+            <el-switch
+            v-model="user.state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value=1
+            :inactive-value=0
+            active-text="正常"
+            inactive-text="锁定">
+          </el-switch>
           </el-form-item>
 
           <el-form-item>
@@ -106,10 +115,10 @@
         this.getUserById()
       }else{ //添加
         this.showPassEdit = true //显示密码框
-        this.passwordText = "Password"
+        this.passwordText = "密码"
         this.execURL = 'main/addUserInfo'
         this.buttonText = '添加'
-        this.user={};
+        this.user={state:1};
       }
 
     },

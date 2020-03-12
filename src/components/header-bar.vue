@@ -18,7 +18,7 @@
 
     <div class="log-out">
       <el-tag class="m-r-10">{{this.$store.state.userinfo.username}}</el-tag>
-      <el-tooltip class="item" @click.native="logout" effect="dark" content="Log Out" placement="bottom">
+      <el-tooltip class="item" @click.native="logout" effect="dark" content="退出登录" placement="bottom">
         <i class="el-icon-switch-button font-20"></i>
       </el-tooltip>
     </div>

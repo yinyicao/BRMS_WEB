@@ -59,8 +59,22 @@
               containLabel: true
             },
             toolbox: {
+              show: true,
               feature: {
-                saveAsImage: {}
+                magicType: {
+                  type: ['line', 'bar'],
+                  title: {
+                    line: '折线图',
+                    bar :'柱状图'
+                  }
+                },
+                dataView: {
+                  show: false
+                },
+                restore: {
+                  show: true
+                },
+                saveAsImage: {},
               }
             },
             xAxis: {

@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-button type="primary" class="m-b-20" icon="el-icon-circle-plus-outline" @click.native="toAddUser">
-      Add
+      添加
     </el-button>
     <el-row>
-      <el-col :span="16">
+      <el-col :span="20">
         <el-table
           :data="userList"
           style="width: 100%" border>
@@ -13,27 +13,35 @@
           </el-table-column>
 
           <el-table-column
-            prop="username"
-            label="Username">
+            prop="userName"
+            label="登录名">
           </el-table-column>
           <el-table-column
-            prop="nickname"
-            label="Nickname">
+            prop="nickName"
+            label="用户名">
           </el-table-column>
 
           <el-table-column
             prop="role"
-            label="Role">
+            label="角色">
+          </el-table-column>
+          <el-table-column
+            prop="state"
+            label="用户状态">
+            <template slot-scope="scope">
+              <i :class="addclassStatus(scope.row.state)"></i>
+              {{scope.row.state | formatSatate}}
+            </template>
           </el-table-column>
 
-          <el-table-column label="Operate">
+          <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button type="primary" @click.native.prevent="toEditUser(scope.row)">Edit</el-button>
+              <el-button type="primary" @click.native.prevent="toEditUser(scope.row)">编辑</el-button>
               <el-button
                 @click.native.prevent="deleteRow(scope.row)"
                 type="danger"
                 size="small">
-                Delete
+                删除
               </el-button>
             </template>
           </el-table-column>
@@ -54,7 +62,23 @@
     created() {
       this.getUserList()
     },
+    filters:{
+      formatSatate(val){
+        switch (val) {
+          case 0 :return '锁定';
+          case 1 :return '正常';
+          default:return val;
+        }
+      }
+    },
     methods: {
+      addclassStatus(i){
+        switch (i) {
+          case 1: return 'el-icon-success green';
+          case 0: return 'el-icon-error red';
+        }
+      },
+
       //删除某一行
       deleteRow(item) {
 
@@ -76,7 +100,7 @@
 
       },
       getUserList() {
-        this.$http.post('main/getUserList').then(res => {
+        this.$http.get('user/getUserList').then(res => {
           this.userList = res.data
         })
       },
@@ -94,5 +118,10 @@
 </script>
 
 <style scoped>
-
+  .green{
+    color: #67C23A;
+  }
+  .red{
+    color:#F56C6C;
+  }
 </style>
