@@ -45,10 +45,10 @@
         //   }
         // })
         this.list = [{
-          id:'admin',
+          id:1,
           value:'admin'
         },{
-          id:'user',
+          id:2,
           value:'user'
         }]
       },

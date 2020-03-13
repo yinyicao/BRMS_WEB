@@ -135,7 +135,7 @@
       },
       handleLogin() {
         let obj = JSON.parse(JSON.stringify(this.loginForm));
-        // obj.password = MD5(obj.password);
+        obj.password = MD5(obj.password);
         this.loading = true;
 
         this.$http.post('/main/login', obj).then(res => {

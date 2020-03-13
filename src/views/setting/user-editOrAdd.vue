@@ -8,7 +8,7 @@
           <el-form-item label="登录名" prop="username" style="height: 40px" required>
             <el-input type="text" v-model="user.username" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="用户名" style="height: 40px" required>
+          <el-form-item label="用户名" prop="nickname" style="height: 40px" required>
             <el-input v-model="user.nickname" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item v-if="showPassEdit" :label="this.passwordText" style="height: 40px" prop="password" required>
@@ -48,18 +48,18 @@
     data () {
       let validateUsername = (rule, value, callback) => { //用户名字段自定义验证规则
         if (value === undefined || value === "") {
-          callback(new Error('请输入作者'));
+          callback(new Error('请输入登录名'));
         } else if(! /^(?!\d+$)[\da-zA-Z]+$/.test(value)){
-          callback(new Error('用户名必须为字母或数字组合'));
+          callback(new Error('登录名必须为字母或字母数字组合'));
         }else{
           callback();
         }
       };
-      let validateAge = (rule, value, callback) => { //年龄字段自定义验证规则
-        if (value === undefined || value === "" || value === null) { //允许年龄为空
-          callback();
-        }if(! /^(?:[1-9]?\d|100)$/.test(value)){
-          callback(new Error('年龄必须0-100的整数'));
+      let validateNickname = (rule, value, callback) => { //用户名字段自定义验证规则
+        if (value === undefined || value === "" || value === null) { //
+          callback("请输入用户名");
+        // }if(! /^(?:[1-9]?\d|100)$/.test(value)){
+        //   callback(new Error('年龄必须0-100的整数'));
         }else{
           callback();
         }
@@ -83,17 +83,17 @@
         showPassEdit: false,
         user: {},
         rules: {
-          role: [
-            {type: 'string', required: true, message: '请选择用户角色'}
-          ],
           username: [
             {type: 'string', validator: validateUsername}
           ],
-          age: [
-            {validator: validateAge}
+          nickname: [
+            {type: 'string',validator: validateNickname}
           ],
           password:[
-            {validator:validatePassword}
+            {type: 'string',validator:validatePassword}
+          ],
+          role: [
+            {type: 'number', required: true, message: '请选择用户角色'}
           ]
         }
       }
@@ -116,7 +116,7 @@
       }else{ //添加
         this.showPassEdit = true //显示密码框
         this.passwordText = "密码"
-        this.execURL = 'main/addUserInfo'
+        this.execURL = 'user/addUser'
         this.buttonText = '添加'
         this.user={state:1};
       }
@@ -134,14 +134,14 @@
       onSubmit (user) {
         this.$refs[user].validate((valid) => { //表单验证
           if(valid){
-            let { username, password, nickname, role,age } = this.user
+            let { username, password, nickname, role,state } = this.user
             let obj = {
               id: this.$route.params.id,
               password: password?MD5(password):null,
               username: username,
               nickname: nickname,
               role: role,
-              age: age
+              state: state
             }
             this.$http.post(this.execURL, obj).then(res => {
               if (res.code === 10004 || res.code === 10005) {//成功
