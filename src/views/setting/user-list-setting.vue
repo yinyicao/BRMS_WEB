@@ -82,10 +82,11 @@
       //删除某一行
       deleteRow(item) {
 
-        this.$confirm('Confirm Delete this data ?')
+        console.log(item)
+        this.$confirm('确认删除用户名为【'+item.nickName+'】的账户信息吗？')
           .then(() => {
             let obj = {id: item.id};
-            this.$http.post('main/deleteUser', obj).then(res => {
+            this.$http.post('user/deleteUser', obj).then(res => {
               if (res.code === 10003) {
                 this.$message.success(res.msg);
                 this.getUserList();
