@@ -110,7 +110,7 @@
       if(this.$route.params.id != 0){ //编辑
         this.showPassEdit = false //隐藏密码框
         this.passwordText = "Reset password"
-        this.execURL = 'main/updateUserInfo'
+        this.execURL = 'user/updateUser'
         this.buttonText = '更新'
         this.getUserById()
       }else{ //添加
@@ -124,7 +124,7 @@
     },
     methods: {
       getUserById () {
-        this.$http.post('main/getUserInfo/' + this.$route.params.id).then(res => {
+        this.$http.get('user/getUserInfoById/' + this.$route.params.id).then(res => {
           this.user = JSON.parse(JSON.stringify(res.data))
         })
       },
