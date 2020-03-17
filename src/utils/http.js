@@ -6,6 +6,7 @@ import store from "../store";
 
 // Set config defaults when creating the instance
 axios.defaults.baseURL = 'http://127.0.0.1:8081/SSM_war/'
+// axios.defaults.baseURL = 'http://book.yinyicao.work/SSM/'
 // 请求带上cookies
 axios.defaults.withCredentials = true
 //获取Token值为undefined,是因为这个语句在登录操作之前运行（main.js导入http.js，而main又是程序的入口-最开始执行）
