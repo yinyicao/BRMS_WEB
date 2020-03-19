@@ -63,12 +63,17 @@ axios.interceptors.response.use(
           }
           break;
         case 500:
-          Msg.error("网络错误！")
+          Msg.error("网络错误，请联系管理员！")
           break;
         case 404:
-
+          Msg.error("后台地址不存在，请联系管理员！")
+          break;
+        default:
+          Msg.error("未知错误，请联系管理员！")
           break;
       }
+    }else{
+      Msg.error("请求后台出错，请联系管理员！")
     }
     return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   });
