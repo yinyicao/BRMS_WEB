@@ -95,7 +95,7 @@ const router = new Router({
               path: 'rolePermission-setting',
               name: '角色权限配置',
               meta: {title: '角色权限配置', icon: 'el-icon-s-check',role:'admin'},
-              component: () => import(/* webpackChunkName: "about" */ '../views/setting/project-setting')
+              component: () => import(/* webpackChunkName: "about" */ '../views/setting/role-setting')
             },
           ]
         },
