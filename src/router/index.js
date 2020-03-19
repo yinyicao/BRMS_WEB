@@ -8,6 +8,7 @@ import retailRouter from '../views/retailstore/retailRouter'
 Vue.use(Router);
 
 const router = new Router({
+  mode:'hash',
   routes: [
     {
       path: '/login',
@@ -21,6 +22,11 @@ const router = new Router({
         title: 'no permission',
       },
       component: () => import('../components/no-permission')
+    },
+    {
+      path: "/404",
+      name: "notFound",
+      component: () => import('../components/404')
     },
     {
       path: '/main',
@@ -161,8 +167,10 @@ router.beforeEach((to, from, next) => {
     }else{
       next()
     }
-  }else{
+  }else if (to.matched.length !== 0) {
     next()
+  }else { //跳转404
+    next({ path: '/404' })
   }
 
   // /!* 路由发生变化修改页面title *!/
