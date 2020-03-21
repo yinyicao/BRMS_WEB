@@ -7,7 +7,7 @@
         <h3 class="title">书店分销管理系统—BRMS</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="loginname">
         <span class="svg-container">
           <i class="el-icon-user"></i>
         </span>
@@ -22,7 +22,7 @@
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="大写字母输入模式已打开" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <i class="el-icon-lock"></i>
@@ -48,12 +48,12 @@
       </el-tooltip>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
-                 @click.native.prevent="handleLogin">Login
+                 @click.native.prevent="handleLogin">登录
       </el-button>
 
       <div style="position:relative">
         <div class="tips">
-          Please input username and password to login in !
+          欢迎登录图书分销管理系统V1.0
         </div>
       </div>
     </el-form>
@@ -62,27 +62,30 @@
 </template>
 
 <script>
-  import axios from 'axios'
   import {setToken,getToken} from '../utils/auth'
   import MD5 from 'md5'
-  import {Msg} from '../utils/MessageTipsUtil'
 
   export default {
     name: 'Login',
     data() {
-      const validateUsername = (rule, value, callback) => {
-        return
-        if (!validUsername(value)) {
-          callback(new Error('Please enter the correct user name'))
-        } else {
-          callback()
+      const validateLoginname = (rule, value, callback) => {
+        if (value === undefined || value === "") {
+          callback(new Error('请输入登录名'));
+        } else if(! /^(?!\d+$)[\da-zA-Z]+$/.test(value)){
+          callback(new Error('登录名必须为字母或字母数字组合'));
+        }else{
+          callback();
         }
       }
       const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error('The password can not be less than 6 digits'))
-        } else {
-          callback()
+        if (value === undefined || value === "") {
+          callback(new Error('请输入密码'));
+        }else if(value.length < 6 ){
+          callback(new Error('密码长度至少6位'));
+        } if(! /^[\w_-]{6,}$/.test(value)){
+          callback(new Error('密码只能是字母数字组成'));
+        }else{
+          callback();
         }
       }
       return {
@@ -92,12 +95,13 @@
           rememberme: false
         },
         loginRules: {
-          username: [{required: true, trigger: 'blur', validator: validateUsername}],
-          password: [{required: true, trigger: 'blur', validator: validatePassword}]
+          loginname: [{required: true, validator: validateLoginname}],
+          password: [{required: true, validator: validatePassword}]
         },
         passwordType: 'password',
         capsTooltip: false,
         loading: false,
+        turnOnCapsLock : false
       }
     },
     mounted() {
@@ -111,16 +115,28 @@
       // window.removeEventListener('storage', this.afterQRScan)
     },
     methods: {
+      /**
+       * 监听键盘、是否大写模式
+       * @param shiftKey 'shift'按键是否按下，值为True和False。只有与其它按键组合时才为true
+       * @param key  key表示按下的按键名称，Shift+'a'===>key='A' ,CapsLock+Shift+'a' ===>key = 'a'
+       */
       checkCapslock({shiftKey, key} = {}) {
         if (key && key.length === 1) {
-          if (shiftKey && (key >= 'a' && key <= 'z') || !shiftKey && (key >= 'A' && key <= 'Z')) {
+          if ((shiftKey && (key >= 'A' && key <= 'Z'))) {//同时按下‘Shift’和字母键，认定为大写状态
             this.capsTooltip = true
-          } else {
+          }else if(key >= 'A' && key <= 'Z'){//只按字母键，输出为大写字母，认定为大写状态且当前打开了‘CapsLock’键
+            this.turnOnCapsLock = true
+            this.capsTooltip = true
+          } else {//其它情况都是小写状态
             this.capsTooltip = false
           }
-        }
-        if (key === 'CapsLock' && this.capsTooltip === true) {
-          this.capsTooltip = false
+        }else if((key && key ==='CapsLock') || (key === 'Shift' && this.turnOnCapsLock)){
+              /*
+              * 1.按下‘CapsLock’ ===> 打开/关闭‘CapsLock’
+              * 2.当前‘CapsLock’键处于打开状态，按下了‘Shift键’ ===> 关闭‘CapsLock’
+              * */
+              this.turnOnCapsLock = !this.turnOnCapsLock
+              this.capsTooltip = !this.capsTooltip
         }
       },
       showPwd() {
@@ -142,7 +158,7 @@
           // console.log(res)
           this.loading = false
           if (res.code === 2000) { //登录成功
-            Msg.success(res.msg)
+            this.$message.success(res.msg)
             // if (setToken(res.data.token)){//浏览器Cookies开启，存储成功
             //   //将Token设置到每次请求的header中
             //   axios.defaults.headers.common['Token'] =  getToken();
@@ -158,7 +174,7 @@
             });
 
           } else {
-            Msg.error(res.msg)
+            this.$message.error(res.msg)
           }
 
         }).catch(() => {
