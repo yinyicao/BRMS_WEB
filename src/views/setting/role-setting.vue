@@ -273,9 +273,29 @@
           //取消数据加载
           const _this = this;
           setTimeout(function(){
+            //消失锁屏
             _this.loading = false
+            //显示通知
+            const h = _this.$createElement;
+
+            _this.$notify({
+              title: '⚠警告',
+              type: 'warning',
+              duration: 2000,
+              message: h('div', { style: 'color: teal'}, '权限关系到角色访问，请谨慎修改')
+            });
+
+
+            _this.$notify({
+              title: '⚠警告',
+              type: 'warning',
+              duration: 5000,
+              offset: 100,
+              message: h('div', { style: 'color: teal'}, '权限修改后，用户重新登录后生效')
+            });
+
+          })
           },500)
-        })
       },
       /**
        * 重置按钮事件
