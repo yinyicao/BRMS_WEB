@@ -58,8 +58,8 @@
           </el-form-item>
           <el-form-item>
             <div style="text-align: center;width: 50%">
-            <el-button size="medium" type="primary" @click="onSubmit" :loading="submitBtnLoading">{{submitBtnText}}</el-button>
-            <el-button style="margin-left: 5%" size="medium" @click="onReset">重 置</el-button>
+            <el-button size="medium" type="primary" @click="onSubmit('roleForm')" :loading="submitBtnLoading">{{submitBtnText}}</el-button>
+            <el-button style="margin-left: 5%" size="medium" @click="onReset('roleForm')">重 置</el-button>
             </div>
           </el-form-item>
         </el-form>
@@ -110,8 +110,10 @@
     },
     methods: {
 
+
       /**
-       * 角色选择下拉框加载数据
+       * 角色选择下拉框加载数据，下拉框出现/隐藏时触发，
+       * @param value 出现则为 true，隐藏则为 false
        */
       handleRoleSelectVisible(value){
         this.selectLoading = true;
@@ -131,7 +133,6 @@
           })
         }
       },
-
       /**
        * 角色选择下拉框Change事件监听
        * @param value 回调值：选中项的ID
@@ -177,23 +178,39 @@
         }
       },
 
-      renderFunc(h, option) {//自定义的数据项的渲染函数，此处为JSX 语法
+      /**
+       * 自定义的数据项的渲染函数，此处为JSX 语法
+       * @param h
+       * @param option
+       * @returns {*}
+       */
+      renderFunc(h, option) {
         return h('span', `${option.key} - ${option.label} `)
       },
-      doPostSubmit(){
-        this.$http.post('/role/addOrUpdateRoleAndPermission', this.roleForm).then(res => {
-          if ((res.code+'').startsWith('1000')) {//成功
-            this.$message.success(res.msg)
-            this.roleForm = {};
-          } else {
-            this.$message.error(res.msg)
+
+
+      /**
+       * 按钮提交事件
+       * @param formName 表单名
+       */
+      onSubmit(formName){
+        const  _this = this;
+        const Request = { //对象
+          // 确定按钮的Http请求
+          ThisHttpRequest(data){ //对象方法
+            _this.$http.post('/role/addOrUpdateRoleAndPermission', data).then(res => {
+              if ((res.code+'').startsWith('1000')) {//成功
+                _this.$message.success(res.msg)
+                // this.roleForm = {};
+              } else {
+                _this.$message.error(res.msg)
+              }
+            })
           }
-        })
-      },
-      onSubmit(){
+        }
 
         if(this.roleForm != null){
-          this.$refs['roleForm'].validate((valid)=>{ //验证表单
+          this.$refs[formName].validate((valid)=>{ //验证表单
             if(valid){
               this.submitBtnLoading = true;
               this.submitBtnText = '   '
@@ -204,7 +221,7 @@
                   cancelButtonText: '取消',
                   type: 'warning'
                 }).then(() => {
-                  this.doPostSubmit();
+                  Request.ThisHttpRequest(this.roleForm);
                 }).catch(() => {
                   // this.$message.info("取消提交");
                 }).finally(()=>{
@@ -217,7 +234,7 @@
                   cancelButtonText: '取消',
                   type: 'warning'
                 }).then(() => {
-                  this.doPostSubmit();
+                  Request.ThisHttpRequest(this.roleForm);
                 }).catch(() => {
                   // this.$message.info("取消提交");
                 }).finally(()=>{
@@ -236,7 +253,11 @@
         }
 
       },
-      getAllPermission: function () {
+
+      /**
+       * 获取所有权限信息，并初始化（封装）
+       */
+      getAllPermission() {
         this.$http.get('permission/getAllPermission').then(res => {
           if (res != null && res.code == 10002) { //遍历
             let list = res.data.map(item => {
@@ -256,15 +277,22 @@
           },500)
         })
       },
-      onReset(){
-        // 清空表单
-        this.roleForm = {}
+      /**
+       * 重置按钮事件
+       * @param formName 表单名
+       */
+      onReset(formName){
         //清空左右两个搜索框 https://blog.csdn.net/wendy_monkey/article/details/89212524
         if(this.$refs.myTransfer){
+          // 清空左边搜索
           this.$refs.myTransfer.$children["0"]._data.query = '';
           // 清空右边搜索
           this.$refs.myTransfer.$children["3"]._data.query = '';
+          // 清空右边的权限列表
+          this.roleForm.existingPermissions = [];
         }
+        // 清空表单
+        this.$refs[formName].resetFields();
       }
     }
   }
