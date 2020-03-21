@@ -1,5 +1,9 @@
 <template>
-  <el-select v-model="roleName" filterable clearable placeholder="Role" @change="selectOption">
+  <el-select v-model="roleName"
+             filterable clearable placeholder="Role"
+             @change="selectOption"
+             @visible-change="handleRoleSelectVisible"
+             :loading="this.selectLoading">
     <el-option
       v-for="item in list"
       :key="item.id"
@@ -15,7 +19,8 @@
     data () {
       return {
         list: [],
-        roleName: ''
+        roleName: '',
+        selectLoading : false,
       }
     },
     props: {
@@ -28,7 +33,6 @@
     },
     created () {
       this.roleName = this.value
-      this.getList()
     },
 
     methods: {
@@ -36,21 +40,27 @@
         this.$emit('update:value', this.roleName)
         // this.$emit('change')
       },
-      //获取role list
-      getList () {
-        // 向后端获取列表
-        // this.$http.get('getRoleList').then(res => {
-        //   if (res.code === 0) {
-        //     this.list = res.data
-        //   }
-        // })
-        this.list = [{
-          id:1,
-          value:'admin'
-        },{
-          id:2,
-          value:'user'
-        }]
+      /**
+       * 角色选择下拉框加载数据，下拉框出现/隐藏时触发，
+       * @param value 出现则为 true，隐藏则为 false
+       */
+      handleRoleSelectVisible(value){
+        this.selectLoading = true;
+        if(value){
+          // 向后端获取角色列表
+          this.$http.get('role/getRoleList').then(res => {
+            if ((res.code+'').startsWith('1000')) {//成功
+              let list = res.data.map(item => {
+                return {id: item.id, value: item.role,desc:item.description,disabled: item.available === 0}
+              })
+              this.list = list;
+            } else {
+              this.$message.error('加载数据失败，请重试！')
+            }
+          }).finally(()=>{
+            this.selectLoading = false;
+          })
+        }
       },
     }
   }
