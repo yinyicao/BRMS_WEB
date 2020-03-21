@@ -8,6 +8,7 @@
       v-for="item in list"
       :key="item.id"
       :label="item.value"
+      :disabled="item.disabled"
       :value="item.id">
     </el-option>
   </el-select>
