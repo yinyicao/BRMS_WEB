@@ -53,17 +53,33 @@ axios.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           if (resData.code == 2002){//未登录授权
-            Msg.warn(resData.msg)
+            // Msg.warn(resData.msg)
+            Msg.warn("您未登录或超时!")
             // 清除信息并跳转到登录页面
             store.dispatch("removeStorage").then(r => {
               router.replace('/login');
             })
           }else{ //没有权限操作
-            Msg.warn(resData.msg)
+            // Msg.warn(resData.msg)
+            Msg.warn("您没有权限进行当前操作!")
           }
           break;
         case 500:
-          Msg.error("网络错误，请联系管理员！")
+          let reader = new FileReader()
+          reader.onload = e => {
+            console.log(e)
+            if (e.target.readyState === 2) {
+              let res = {}
+              res = JSON.parse(e.target.result)
+              if (res.code == 20015){//文件导出错误
+                Msg.error(res.msg)
+              }else{
+                Msg.error("网络错误，请联系管理员！")
+              }
+              console.info('500->back:: ', res)
+            }
+          }
+          reader.readAsText(resData)
           break;
         case 404:
           Msg.error("后台地址不存在，请联系管理员！")
@@ -73,6 +89,7 @@ axios.interceptors.response.use(
           break;
       }
     }else{
+      console.log(error)
       Msg.error("请求后台出错，请联系管理员！")
     }
     return Promise.reject(error.response.data)   // 返回接口返回的错误信息

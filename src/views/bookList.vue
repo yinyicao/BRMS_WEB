@@ -20,45 +20,50 @@
         @click="addRow">
         添加图书
       </el-button>
-      <el-input placeholder="请输入内容" v-model="searchForm.value" class="input-with-select" style="width: 350px;" :clearable="true">
-        <el-select v-model="searchForm.item" slot="prepend" placeholder="请选择" style="width: 100px;height:20px;border-color: #409EFF;" :clearable="true" >
+      <el-input placeholder="请输入内容" v-model="searchForm.value" class="input-with-select" style="width: 350px;"
+                :clearable="true">
+        <el-select v-model="searchForm.item" slot="prepend" placeholder="请选择"
+                   style="width: 100px;height:20px;border-color: #409EFF;" :clearable="true">
           <el-option label="书名" value="book_name"></el-option>
           <el-option label="类别" value="book_category"></el-option>
           <el-option label="作者" value="book_author"></el-option>
           <el-option label="出版社" value="book_pub"></el-option>
-       </el-select>
+        </el-select>
         <el-button slot="append" icon="el-icon-search" @click="searchData"></el-button>
       </el-input>
 
-      <el-upload
-        class="upload-demo"
-        action="/wm/upload/"
-        :on-change="readExcel"
-        :show-file-list="false"
-        :auto-upload="false"
-        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-        style="float: right">
-        <el-button size="small">导入数据<i class="el-icon-upload2 el-icon--right"></i></el-button>
-      </el-upload>
+      <!--------------------START-使用js-xlsx导入导出数据-START-------------------->
+      <!--      <el-upload-->
+      <!--        class="upload-demo"-->
+      <!--        action="/wm/upload/"-->
+      <!--        :on-change="readExcel"-->
+      <!--        :show-file-list="false"-->
+      <!--        :auto-upload="false"-->
+      <!--        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"-->
+      <!--        style="float: right">-->
+      <!--        <el-button size="small">导入数据<i class="el-icon-upload2 el-icon&#45;&#45;right"></i></el-button>-->
+      <!--      </el-upload>-->
 
-        <download-excel
-          class = "export-excel-wrapper"
-          :fetch   = "fetchData"
-          :before-generate = "startDownload"
-          :before-finish = "finishDownload"
-          :data = "this.outputData.json_data"
-          :fields = "this.outputData.json_fields"
-          name = "图书列表信息.xls"
-          style="float: right">
-          <el-button
-            size="small"
-            >
-            导出数据
-            <i class="el-icon-download el-icon--right"></i>
-          </el-button>
-        </download-excel>
-    </el-row>
-    <el-row>
+      <!--        <download-excel-->
+      <!--          class = "export-excel-wrapper"-->
+      <!--          :fetch   = "fetchData"-->
+      <!--          :before-generate = "startDownload"-->
+      <!--          :before-finish = "finishDownload"-->
+      <!--          :data = "this.outputData.json_data"-->
+      <!--          :fields = "this.outputData.json_fields"-->
+      <!--          name = "图书列表信息.xls"-->
+      <!--          style="float: right">-->
+      <!--        </download-excel>-->
+      <!-----------------------END-使用js-xlsx导入导出数据-END-------------------->
+      <el-button
+        size="small"
+        @click="exportExecl"
+        style="float: right"
+      >
+        导出数据
+        <i class="el-icon-download el-icon--right"></i>
+      </el-button>
+
       <el-table
         :data="bookList"
         style="width: 100%">
@@ -106,12 +111,12 @@
                          align="center">
           <template slot-scope="scope">
             <el-button
-            @click.native.prevent="editRow(scope.row)"
-            type="primary"
-            icon="el-icon-edit"
-            size="small">
-            编辑
-          </el-button>
+              @click.native.prevent="editRow(scope.row)"
+              type="primary"
+              icon="el-icon-edit"
+              size="small">
+              编辑
+            </el-button>
             <el-button
               @click.native.prevent="delRow(scope.row)"
               type="danger"
@@ -134,7 +139,7 @@
     </el-row>
 
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible"
-                width="40%" >
+               width="40%" >
       <el-form :model="dialogForm" :rules="rules"  ref="dialogForm">
         <el-form-item label="书名" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
           <el-input v-model="dialogForm.bookName" autocomplete="off"></el-input>
@@ -212,6 +217,7 @@
   import UserlistSelect from '../components/userlist-select'
   import XLSX from 'xlsx'
   import Utils from '../utils/ev-utils'
+  import axios from 'axios'
 
   export default {
     name: 'bookList',
@@ -321,6 +327,57 @@
           this.bookCategorySelectLoading = false;
         }
       },
+      exportExecl(){
+        this.fullscreenLoading = true;
+        axios({
+          method: 'get',
+          responseType: 'blob',
+          url: 'book/export',
+        }).then(res =>{
+            if(res.headers['content-type'].indexOf('application/vnd.ms-excel') > -1){//下载文件
+              let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+              let href = window.URL.createObjectURL(blob);
+              // window.location.href = href;//本来是直接跳转就可以下载了，但是文件名由后端设置，需要获取一下
+              // 获取后端设置的header中文件名参数值
+              let filename = res.headers['content-filename'];
+              //由于后端使用utf8对文件名进行了编码，需要转一下
+              filename = Utils.getCharFromUtf8(filename)
+              let downloadElement = document.createElement('a');
+              downloadElement.href = href;
+              downloadElement.download = filename; //下载后文件名
+              document.body.appendChild(downloadElement);
+              downloadElement.click(); //点击下载
+              document.body.removeChild(downloadElement); //下载完成移除元素
+              window.URL.revokeObjectURL(href); //释放掉blob对象
+            }else if(res.headers['content-type'].indexOf('application/json') > -1){
+              let reader = new FileReader()
+              reader.onload = e => {
+                if (e.target.readyState === 2) {
+                  let res = {}
+                  res = JSON.parse(e.target.result)
+                  console.info('back:: ', res)
+                }
+              }
+              reader.readAsText(res)
+            }
+        }).finally(()=>{
+          this.fullscreenLoading = false;
+        })
+      },
+      searchData(){
+          if(!(this.searchForm.item == undefined)){
+            this.getBookList();
+          }else{
+            this.$message.warning("请输入内容再搜索")
+          }
+
+      },
+
+      /****************************************************************************
+       * 使用 js-xlsx 导入导出数据------START
+       * *************************************************************************
+       */
+      /*
       async fetchData() {
         let obj = {
           currentPage: 0,
@@ -339,15 +396,7 @@
           this.$message.error('数据加载错误，请检查网络连接！');
           // }, 10000);
         })
-        return this.outputData.json_data
-      },
-      searchData(){
-          if(!(this.searchForm.item == undefined)){
-            this.getBookList();
-          }else{
-            this.$message.warning("请输入内容再搜索")
-          }
-
+        return this.outputData.json_data;
       },
       startDownload() {
         this.fullscreenLoading = true;
@@ -417,6 +466,12 @@
         })
 
       },
+      */
+      /****************************************************************************
+       * 使用 js-xlsx 导入导出数据------END
+       * *************************************************************************
+       */
+
       refreshTable(){
           this.searchForm = {};
           this.getBookList();
