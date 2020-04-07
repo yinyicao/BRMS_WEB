@@ -334,7 +334,6 @@
           responseType: 'blob',
           url: 'book/export',
         }).then(res =>{
-            if(res.headers['content-type'].indexOf('application/vnd.ms-excel') > -1){//下载文件
               let blob = new Blob([res.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
               let href = window.URL.createObjectURL(blob);
               // window.location.href = href;//本来是直接跳转就可以下载了，但是文件名由后端设置，需要获取一下
@@ -349,17 +348,6 @@
               downloadElement.click(); //点击下载
               document.body.removeChild(downloadElement); //下载完成移除元素
               window.URL.revokeObjectURL(href); //释放掉blob对象
-            }else if(res.headers['content-type'].indexOf('application/json') > -1){
-              let reader = new FileReader()
-              reader.onload = e => {
-                if (e.target.readyState === 2) {
-                  let res = {}
-                  res = JSON.parse(e.target.result)
-                  console.info('back:: ', res)
-                }
-              }
-              reader.readAsText(res)
-            }
         }).finally(()=>{
           this.fullscreenLoading = false;
         })
