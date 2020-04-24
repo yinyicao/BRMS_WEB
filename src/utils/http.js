@@ -12,6 +12,8 @@ axios.defaults.withCredentials = true
 //获取Token值为undefined,是因为这个语句在登录操作之前运行（main.js导入http.js，而main又是程序的入口-最开始执行）
 //所以获取不到Token?
 // axios.defaults.headers.common['Token'] =  getToken();
+
+
 export default {
   get (url, param) {
     return new Promise((resolve, reject) => {
@@ -39,7 +41,7 @@ export default {
         // console.log(final)
       })
     })
-  },
+  }
 }
 
 // http response 拦截器 ,拦截（token过期），重新登录

@@ -11,7 +11,8 @@ const store = new Vuex.Store({
     timeRecords: [],
     opened: true,
     device: 'desktop',
-    visitedViews: []
+    visitedViews: [],
+    userinfo: null
   },
   getters: {
     getStorage(state) {

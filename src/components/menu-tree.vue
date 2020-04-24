@@ -35,11 +35,24 @@
     },
     methods: {
       isAdminShow(meta) {
-        if (meta.role && this.$store && this.$store.state && this.$store.state.userinfo
-          && !this.$store.state.userinfo.rolenames.includes(meta.role)) {
-          return false
+        // 默认为false,所以要求每一条路由的meta都要有permissions
+        let res = false;
+        if (meta.permissions && this.$store && this.$store.state && this.$store.state.userinfo) {
+          // 拥有权限
+          let havePermissions = this.$store.state.userinfo.permissions;
+          // 需要权限
+          let requirePermissions = meta.permissions;
+          // 循环遍历-只要有其中一个权限就显示
+          requirePermissions.some(rp =>{
+            if (havePermissions.includes(rp)){
+              res = true;
+              return havePermissions.includes(rp)
+            }
+          })
+          console.log(havePermissions)
+          console.log(requirePermissions)
         }
-        return true
+        return res;
       }
     }
   }

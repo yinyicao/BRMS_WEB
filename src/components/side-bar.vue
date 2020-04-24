@@ -27,7 +27,8 @@
         src:logo1,
         logoHeight:50,
         logoWidth:100,
-        logoMarginLeft:20
+        logoMarginLeft:20,
+        routerList:null
       }
     },
     computed: {

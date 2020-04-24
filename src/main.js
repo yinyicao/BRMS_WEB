@@ -26,10 +26,10 @@ Vue.use(ElementUI, { locale, size: 'small', zIndex: 3000 })
 
 
 import store from './store'
-import Http from './utils/http'
+import http from './utils/http'
 import TimeFormat from './utils/tool';
 
-Vue.prototype.$http = Http
+Vue.prototype.$http = http
 Vue.prototype.$timeFormat = TimeFormat
 
 Vue.config.productionTip = false

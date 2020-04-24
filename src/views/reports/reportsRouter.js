@@ -6,13 +6,13 @@ export default [
   {
     path: 'bookPress',
     name: '出版社分析',
-    meta: {title: '出版社分析报表', icon: 'el-icon-data-analysis'},
+    meta: {title: '出版社分析报表', icon: 'el-icon-data-analysis',permissions:['publisher:get']},
     component: () => import('./bookPress')
   },
   {
     path: 'bookCategory',
     name: '图书类别分析',
-    meta: {title: '图书类别报表', icon: 'el-icon-pie-chart'},
+    meta: {title: '图书类别报表', icon: 'el-icon-pie-chart',permissions:['book:get']},
     component: () => import('./bookCategory')
   }
   // ,{

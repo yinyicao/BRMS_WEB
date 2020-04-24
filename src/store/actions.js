@@ -5,7 +5,7 @@ const userinfo = function (obj) {
     //用户登录时已经返回足够的数据，这里不再需要去请求
     sessionStorage.setItem('userinfo', JSON.stringify(obj))
     resolve(obj)
-    // axios.post('/main/getUserInfo/' + obj).then(res => {
+    // axios.post('/main/setUserInfo/' + obj).then(res => {
     //   if (res.status) {
     //     window.localStorage.setItem('userinfo', JSON.stringify(res.data.data))
     //     resolve(res.data.data)
@@ -19,7 +19,7 @@ const userinfo = function (obj) {
 
 export default {
 
-  getUserInfo({commit}, obj) {
+  setUserInfo({commit}, obj) {
     return new Promise((resolve => {
       userinfo(obj).then(res => {
         commit('USERINFO', res);

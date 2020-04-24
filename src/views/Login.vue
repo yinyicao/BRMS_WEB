@@ -170,7 +170,7 @@
                   // let id = res.data.user.id;
                   let data = res.data;
                   //获取用户信息存储到全局变量中
-                  this.$store.dispatch('getUserInfo', data).then(res => {
+                  this.$store.dispatch('setUserInfo', data).then(res => {
 
                     this.$router.replace('/main/index');
                   });
