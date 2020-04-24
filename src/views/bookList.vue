@@ -14,6 +14,7 @@
         刷新
       </el-button>
       <el-button
+        v-if="this.$store.state.userinfo.permissions.includes('book:add')"
         type="primary"
         icon="el-icon-circle-plus"
         size="small"
@@ -107,9 +108,13 @@
           align="center">
         </el-table-column>
 
-        <el-table-column label="操作"
-                         align="center">
-          <template slot-scope="scope">
+        <el-table-column
+          v-if="this.$store.state.userinfo.permissions.includes('book:modify')
+            && this.$store.state.userinfo.permissions.includes('book:remove')"
+          label="操作"
+          align="center">
+          <template
+            slot-scope="scope">
             <el-button
               @click.native.prevent="editRow(scope.row)"
               type="primary"
