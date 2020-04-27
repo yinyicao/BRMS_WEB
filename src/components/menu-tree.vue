@@ -46,7 +46,8 @@
           requirePermissions.some(rp =>{
             if (havePermissions.includes(rp)){
               res = true;
-              return havePermissions.includes(rp)
+              // some()函数遍历，在其内部，只要返回true就会跳出some函数
+              return true
             }
           })
           console.log(havePermissions)

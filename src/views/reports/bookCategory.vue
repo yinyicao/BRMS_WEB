@@ -45,7 +45,7 @@
           var options = {
             title : {
               text: '图书类别分析',
-              subtext: '图书数量',
+              subtext: '图书数量（本）',
               x:'center'
             },
             tooltip : {

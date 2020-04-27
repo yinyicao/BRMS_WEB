@@ -66,7 +66,7 @@ const router = new Router({
           name: '报表统计视图',
           // meta: {title: 'tipoff-record', icon: 'el-icon-alarm-clock', role: 'admin'},
           // permissions:['book:get','publisher:get']要有图书查询的权限或查询出版社
-          meta: {title: '报表统计', icon: 'el-icon-s-data',permissions:['book:get','publisher:get']},
+          meta: {title: '报表统计', icon: 'el-icon-s-data',permissions:['bookPressData:get','bookCategoryData:get']},
           component: Layout,
           // component: () => import(/* webpackChunkName: "about" */ '../views/reports'),
           children:[
