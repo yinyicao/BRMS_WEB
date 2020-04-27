@@ -247,7 +247,14 @@
   .login-container {
     min-height: 100%;
     width: 100%;
-    background-color: $bg;
+    //background-color: $bg;
+
+    /*background-image: url("../assets/backimg.jpg");*/
+    /*background-repeat:no-repeat;*/
+    /*background-size:100% 100%;*/
+    /*-moz-background-size:100% 100%;*/
+    background: radial-gradient( #6ca5f1 0%, #2d3a4b 35%, #6ca5f1 100%);
+
     overflow: hidden;
 
     .login-form {
