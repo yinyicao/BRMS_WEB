@@ -10,6 +10,7 @@
     "app": "node ./server/app.js"
   },
   "dependencies": {
+    "@zxing/library": "^0.16.3",
     "autoprefixer": "^9.7.4",
     "axios": "^0.19.0",
     "babel-core": "^6.26.3",
@@ -25,6 +26,7 @@
     "qs": "latest",
     "vue": "^2.6.10",
     "vue-axios": "^2.1.4",
+    "vue-barcode": "^1.2.0",
     "vue-json-excel": "^0.2.98",
     "vue-router": "^3.0.3",
     "vuex": "^3.1.1",

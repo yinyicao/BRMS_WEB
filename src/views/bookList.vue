@@ -21,6 +21,14 @@
         @click="addRow">
         添加图书
       </el-button>
+      <el-button
+        v-if="this.$store.state.userinfo.permissions.includes('book:add')"
+        type="primary"
+        icon="el-icon-circle-plus"
+        size="small"
+        @click="addRowByCamera">
+        扫码添加
+      </el-button>
       <el-input placeholder="请输入内容" v-model="searchForm.value" class="input-with-select" style="width: 350px;"
                 :clearable="true">
         <el-select v-model="searchForm.item" slot="prepend" placeholder="请选择"
@@ -58,7 +66,7 @@
       <!-----------------------END-使用js-xlsx导入导出数据-END-------------------->
       <el-button
         size="small"
-        @click="exportExecl"
+        @click="exportExcel"
         style="float: right"
       >
         导出数据
@@ -212,6 +220,83 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="添加" :visible.sync="dialogByCameraVisible"
+               @close='closeDialogByCamera'
+               width="40%" >
+      <el-button
+        type="primary"
+        icon="el-icon-circle-plus"
+        size="small"
+        @click="startOrStopScan">
+        {{startOrStopScanText}}
+      </el-button>
+      <video id="video" v-if="CameraVideoVisible" width="50%" height="10%" style="border: 1px solid gray"></video>
+      <el-form :model="dialogForm" :rules="rules"  ref="dialogForm" v-if="dialogFormByCameraVisible">
+        <el-form-item label="书名" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
+          <el-input v-model="dialogForm.bookName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="类别" :label-width="formLabelWidth"  prop="bookCategory" style="height: 44px;">
+          <!--          <el-input v-model="dialogForm.bookCategory" autocomplete="off"></el-input>-->
+          <el-select v-model="dialogForm.bookCategory" placeholder="请选择"
+                     size="small"
+                     style="width: 290px"
+                     :filterable= "true"
+                     :clearable = "true"
+                     v-on:visible-change="querySelectBookCategory"
+                     :loading="bookCategorySelectLoading"
+                     loading-text="加载中..."
+          >
+            <el-option
+              v-for="item in bookCategoryOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="价格" :label-width="formLabelWidth"  prop="bookPrice" style="height: 44px;width: 400px" required>
+          <el-input type="number" v-model="dialogForm.bookPrice" autocomplete="off" ></el-input>
+        </el-form-item>
+        <el-form-item label="作者" :label-width="formLabelWidth"  prop="bookAuthor" style="height: 44px;width: 400px" required>
+          <el-input v-model="dialogForm.bookAuthor" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="出版社" :label-width="formLabelWidth"  prop="bookPub" style="height: 44px;width: 400px">
+          <!--          <el-input v-model="dialogForm.bookPub" autocomplete="off"></el-input>-->
+          <el-select v-model="dialogForm.bookPub" placeholder="请选择"
+                     :filterable= "true"
+                     :clearable = "true"
+                     size="small"
+                     style="width: 290px"
+                     v-on:visible-change="querySelectBookPub"
+                     :loading="bookPubSelectLoading"
+                     loading-text="加载中..."
+          >
+            <el-option
+              v-for="item in bookPubOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="库存" :label-width="formLabelWidth"  prop="bookRepertorySize" style="height: 44px;width: 400px" >
+          <!--          <el-input type="number" v-model="dialogForm.bookRepertorySize" autocomplete="off"></el-input>-->
+          <el-input-number v-model="dialogForm.bookRepertorySize"
+                           :min="1"
+                           :max="1000"
+                           size="small"
+                           controls-position="right"
+                           style="width: 290px"
+          ></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogByCameraVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmit('dialogForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 
 
@@ -223,6 +308,8 @@
   import XLSX from 'xlsx'
   import Utils from '../utils/ev-utils'
   import axios from 'axios'
+  import {BrowserMultiFormatReader} from "@zxing/library";
+  import {showApiforMatterDateTime} from "../utils/tool"
 
   export default {
     name: 'bookList',
@@ -266,6 +353,11 @@
         bookCategorySelectLoading:false,
         bookPubSelectLoading:false,
         dialogFormVisible: false,
+        dialogByCameraVisible: false,
+        dialogFormByCameraVisible: false,
+        CameraVideoVisible: false,
+        startOrStopScanText: '开始扫描',
+        firstDeviceId:'',
         formLabelWidth: '110px',
         dialogStatus: "",
         list: [],
@@ -305,6 +397,10 @@
     created() {
       this.getBookList()
     },
+    mounted() {
+      // this.getCompetence();
+
+    },
     methods: {
       querySelectBookPub(isCollapse){
         if (isCollapse && this.bookPubOptions.length <=1){
@@ -332,7 +428,7 @@
           this.bookCategorySelectLoading = false;
         }
       },
-      exportExecl(){
+      exportExcel(){
         this.fullscreenLoading = true;
         axios({
           method: 'get',
@@ -506,6 +602,191 @@
           // this.dialogForm.bookRepertorySize = 10;
 
         },
+      addRowByCamera(){
+        this.dialogByCameraVisible = true;
+        this.dialogForm = {};//清空表单
+        // this.dialogForm.bookRepertorySize = 10;
+
+      },
+      openFullScreen(){
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        return loading;
+      },
+      closeDialogByCamera(){
+        const _this = this;
+        console.log('closeDialogByCamera')
+        // 按钮状态为stop
+        _this.startOrStop = 'stop'
+        // 按钮文字
+        _this.startOrStopScanText = '开始扫描'
+        // 不显示接收视频的video
+        _this.CameraVideoVisible = false;
+        // 关闭表单显示
+        _this.dialogFormByCameraVisible = false;
+        // 重置codeReader关闭摄像头扫描
+        if(_this.codeReader!=null)
+                _this.codeReader.reset()
+      },
+      startOrStopScan(){
+        const _this = this;
+        // 扫码之前
+        function scanBefore() {
+          console.log('scanBefore...')
+          // 初始化设备（相机），创建codeReader对象
+          _this.codeReader = new BrowserMultiFormatReader();
+          _this.codeReader
+            .listVideoInputDevices()
+            .then(videoInputDevices => {
+              // videoInputDevices.forEach(device =>
+              //   console.log(`${device.label}, ${device.deviceId}`)
+              //
+              // );
+              //只获取第一个设备
+              _this.firstDeviceId = videoInputDevices[0].deviceId;
+              console.log(_this.firstDeviceId)
+            })
+            .catch(err => console.error(err));
+          // 按钮状态为start
+          _this.startOrStop = 'start'
+          // 按钮文字
+          _this.startOrStopScanText = '停止扫描'
+          // 显示接收视频的video
+          _this.CameraVideoVisible = true
+        }
+        // 扫码成功
+        function scanSuccess(result) {
+          console.log('scanSuccess...')
+          console.log('扫描结果为：'+result.text)
+          const isbn = result.text;
+          // 按钮状态为stop
+          _this.startOrStop = 'stop'
+          // 按钮文字
+          _this.startOrStopScanText = '重新扫描'
+          // 不显示接收视频的video
+          _this.CameraVideoVisible = false;
+          // 重置codeReader关闭扫描
+          _this.codeReader.reset()
+
+          // 打开全局加载loading动画
+          const loading = _this.openFullScreen()
+
+          // 构造请求对象
+          let obj = {
+            "showapi_timestamp": showApiforMatterDateTime(), //注意要使用当前时间。服务器只处理时间误差10分钟以内的请求
+            "showapi_appid": '202232', //这里需要改成自己的appid
+            "showapi_sign": '38a08bd2d39e4588a729eefcee827b0d',  //这里需要改成自己的密钥
+            "isbn": isbn //ISBN号
+          }
+          // 请求showapi.com接口 根据isbn查询图书
+          _this.$http.post('/showapi', obj).then(res => {
+            console.log(res)
+            loading.close();
+            /**{
+                  "showapi_res_error": "",
+                  "showapi_res_id": "5eac3b618d57baae12dab5a0",
+                  "showapi_res_code": 0,
+                  "showapi_res_body": {
+                    "ret_code":0,
+                    "remark":"success",
+                    "showapi_fee_code":0,
+                    "data":{
+                      "edition":"1",
+                      "pubdate":"2004-09",
+                      "paper":"胶版纸",
+                      "img":"http://app2.showapi.com/isbn/img/55af224035004a45bbb424891ad59ac3.jpg",
+                      "gist":"　C#是一门简单、现代、优雅、面向对象、类型安全、平台独立的组件编程语言，是.NET的关键性语言，也是整个.NET平台的基础，它使程序员能快速地为新一代Microsoft.Net平台开发出应用程序。全书以通俗易懂的语言，精辟丰富的实例，从对C#的简介开始，全面讲解了C#编程语言规范以及各个层面的特性，内容包括C#的词法结构、类型、变量、表达式、类、结构、不安全代码、泛型，等等。",
+                      "format":"其他",
+                      "publisher":"电子工业出版社",
+                      "author":"Anders Hejlsberg",
+                      "title":"C#编程语言详解/.NET技术大系",
+                      "price":"55.00",
+                      "page":"482",
+                      "isbn":"9787121002281",
+                      "binding":"平装",
+                      "produce":""}}
+                }
+             */
+            if(res.showapi_res_code === 0){
+              // 查询成功
+              _this.dialogFormByCameraVisible = true;
+              _this.$message.success('查询成功,请手动输入库存！')
+              console.log(res)
+              const resBookData = res.showapi_res_body.data;
+              _this.dialogForm={
+                bookName:resBookData.title,
+                bookCategory:resBookData.format,
+                bookPrice:resBookData.price,
+                bookPub:resBookData.publisher,
+                bookAuthor: resBookData.author,
+              }
+              // FIXME 显示到页面
+              console.log(_this.dialogForm)
+            }else{
+              // 查询失败
+              /**
+               * 0成功
+               -1，系统调用错误
+               -2，可调用次数或金额为0
+               -3，读取超时
+               -4，服务端返回数据解析错误
+               -5，后端服务器DNS解析错误
+               -6，服务不存在或未上线
+               -7, API创建者的网关资源不足
+               -1000，系统维护
+               -1002，showapi_appid字段必传
+               -1003，showapi_sign字段必传
+               -1004，签名sign验证有误
+               -1005，showapi_timestamp无效
+               -1006，app无权限调用接口
+               -1007，没有订购套餐
+               -1008，服务商关闭对您的调用权限
+               -1009，调用频率受限
+               -1010，找不到您的应用
+               -1011，子授权app_child_id无效
+               -1012，子授权已过期或失效
+               -1013，子授权ip受限
+               -1014，token权限无效
+               */
+              console.log("查询失败，返回失败数据如下：")
+              console.log(res)
+              _this.$message.error('调用图书查询接口失败')
+            }
+          })
+        }
+        function scanDestroy() {
+          console.log('scanDestroy...')
+          // 按钮状态为stop
+          _this.startOrStop = 'stop'
+          // 按钮文字
+          _this.startOrStopScanText = '开始扫描'
+          // 不显示接收视频的video
+          _this.CameraVideoVisible = false;
+          // 重置codeReader关闭扫描
+          _this.codeReader.reset()
+        }
+
+        if(null == _this.startOrStop || _this.startOrStop == 'stop'){
+          // 开始扫
+          scanBefore();
+          _this.codeReader.decodeFromVideoDevice(_this.firstDeviceId, 'video', (result, err) => {
+            if (result) {
+              // result不为null即扫描成功
+              scanSuccess(result)
+            }
+            // if (err && !(err instanceof ZXing.NotFoundException)) {
+            //   console.error(err)
+            // }
+          })
+        }else if (_this.startOrStop == 'start'){
+          //停止扫
+          scanDestroy()
+        }
+      },
       editRow(item){
           // 初始化表单数据
           this.dialogForm = item;

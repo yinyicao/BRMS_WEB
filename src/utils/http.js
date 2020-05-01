@@ -5,7 +5,7 @@ import {Msg} from './MessageTipsUtil'
 import store from "../store";
 
 // Set config defaults when creating the instance
-axios.defaults.baseURL = 'http://127.0.0.1:8081/SSM_war/'
+axios.defaults.baseURL = '/api/'
 // axios.defaults.baseURL = 'http://book.yinyicao.work/SSM/'
 // 请求带上cookies
 axios.defaults.withCredentials = true
