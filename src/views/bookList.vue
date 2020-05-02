@@ -80,34 +80,40 @@
           type="index">
         </el-table-column>
         <el-table-column
+          prop="bookIsbn"
+          label="ISBN"
+          width="110px"
+          align="center">
+        </el-table-column>
+        <el-table-column
           prop="bookName"
           label="书名"
-          width="150px"
+          width="200px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="categoryName"
           label="类别"
-          width="70px"
+          width="90px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="bookPrice"
           label="价格"
-          width="100px"
+          width="80px"
           align="center">
         </el-table-column>
 
         <el-table-column
           prop="bookAuthor"
           label="作者"
-          width="80px"
+          width="90px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="bookRepertorySize"
           label="库存"
-          width="100px"
+          width="80px"
           align="center">
         </el-table-column>
         <el-table-column
@@ -154,6 +160,9 @@
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible"
                width="40%" >
       <el-form :model="dialogForm" :rules="rules"  ref="dialogForm">
+        <el-form-item label="ISBN" :label-width="formLabelWidth"  prop="bookIsbn" style="height: 44px; width: 400px">
+          <el-input v-model="dialogForm.bookIsbn" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="书名" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
           <el-input v-model="dialogForm.bookName" autocomplete="off"></el-input>
         </el-form-item>
@@ -225,21 +234,38 @@
                width="40%" >
       <el-button
         type="primary"
-        icon="el-icon-circle-plus"
+        icon="el-icon-camera-solid"
         size="small"
         @click="startOrStopScan">
         {{startOrStopScanText}}
       </el-button>
       <video id="video" v-if="CameraVideoVisible" width="50%" height="10%" style="border: 1px solid gray"></video>
       <el-form :model="dialogFormByCameraVideo" :rules="rulesByCameraVideo"  ref="dialogFormByCameraVideo" v-if="dialogFormByCameraVisible">
-        <el-form-item label="ISBN" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
-          <el-input v-model="dialogFormByCameraVideo.isbn" autocomplete="off"></el-input>
+        <el-form-item label="ISBN" :label-width="formLabelWidth"  prop="bookIsbn" style="height: 44px; width: 400px">
+          <el-input v-model="dialogFormByCameraVideo.bookIsbn" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="书名" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
           <el-input v-model="dialogFormByCameraVideo.bookName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="类别" :label-width="formLabelWidth"  prop="bookCategory" style="height: 44px;width: 400px">
-          <el-input v-model="dialogFormByCameraVideo.bookCategory" autocomplete="off"></el-input>
+<!--          <el-input v-model="dialogFormByCameraVideo.bookCategory" autocomplete="off"></el-input>-->
+          <el-select v-model="dialogFormByCameraVideo.bookCategory" placeholder="请选择"
+                     size="small"
+                     style="width: 290px"
+                     :filterable= "true"
+                     :clearable = "true"
+                     v-on:visible-change="querySelectBookCategory"
+                     :loading="bookCategorySelectLoading"
+                     loading-text="加载中..."
+          >
+            <el-option
+              v-for="item in bookCategoryOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="价格" :label-width="formLabelWidth"  prop="bookPrice" style="height: 44px;width: 400px" required>
           <el-input type="number" v-model="dialogFormByCameraVideo.bookPrice" autocomplete="off" ></el-input>
@@ -275,7 +301,7 @@
 <script>
   import ProjectSelect from '../components/role-select'
   import UserlistSelect from '../components/userlist-select'
-  import XLSX from 'xlsx'
+  // import XLSX from 'xlsx'
   import Utils from '../utils/ev-utils'
   import axios from 'axios'
   import {BrowserMultiFormatReader} from "@zxing/library";
@@ -303,6 +329,15 @@
           callback();
         }
       };
+      let validateIsbn = (rule, value, callback)=>{ //ISBN字段自定义规则
+        if (value === undefined || value === "") {
+          callback(new Error('请输入ISBN号'));
+        } else if(! /(^\d{10}|\d{13})$/.test(value)){
+          callback(new Error('请输入正确的ISBN（10/13位）'));
+        }else{
+          callback();
+        }
+      }
       return {
         searchForm:{},
         bookCategoryOptions: [],
@@ -341,6 +376,9 @@
           total: 0
         },
         rules: {
+          bookIsbn:[
+            {type: 'number', required: true,validator: validateIsbn}
+          ],
           bookName: [
             {type: 'string', required: true, message: '请输入书名'}
           ],
@@ -364,12 +402,15 @@
           ]
         },
         rulesByCameraVideo: {
+          bookIsbn:[
+            {type: 'number', required: true,validator: validateIsbn}
+          ],
           bookName: [
             {type: 'string', required: true, message: '请输入书名'}
           ],
           bookCategory: [
             // {type: 'string', required: true, message: '请输入类别', trigger: 'change'}
-            {type: 'string', required: true, message: '请输入类别'}
+            {type: 'number', required: true, message: '请输入类别'}
           ],
           bookPrice: [
             // {required: true, message: '请输入价格', trigger: 'blur'}
@@ -595,7 +636,10 @@
           if (valid) {
               this.$http.post('book/addBookByCamera', this.dialogFormByCameraVideo).then(res => {
                 if (res.code === 10005) {
+                  // 不显示表单
                   this.dialogFormByCameraVisible = false;
+                  //按钮文字
+                  this.startOrStopScanText = '再加一本'
                   this.getBookList();
                   this.$message.success(res.msg)
                 }else{
@@ -744,22 +788,91 @@
                       "produce":""}}
                 }
              */
+            /**
+             *                 {
+                  "showapi_res_error": "",
+                  "showapi_res_id": "5ead00ac8d57baae12f95aaa",
+                  "showapi_res_code": 0,
+                  "showapi_res_body": {
+                    "datas":[
+                      {"series":"",
+                      "pagesize":"",
+                      "authorintro":"",
+                      "edition":"",
+                      "yinci":"",
+                      "paper":"",
+                      "subject":"",
+                      "wordnum":"",
+                      "img":"https://img.maimiaobook.com/cover/892TVU6S3B.jpg?x-oss-process=style/yuantu",
+                      "bookcatalog":"",
+                      "gist":"",
+                      "publisher":
+                      "电子工业出版社",
+                      "annotation":"",
+                      "author":"[美]AndersHejlsbergScottWiltamuthPeterGolde张晓",
+                      "title":"植物大战僵尸图鉴全攻略全本",
+                      "isbn10":"7121002280",
+                      "page":"482",
+                      "page_format":"",
+                      "isbn":"9787121002281",
+                      "publisher_pubdate":"",
+                      "title_author":"",
+                      "pubdate":"2004-09-01",
+                      "keyword":"",
+                      "levelnum":"",
+                      "genus":"",
+                      "format":"",
+                      "heatnum":1,
+                      "price":20.00,
+                      "batch":"",
+                      "pubplace":"",
+                      "binding":"",
+                      "language":"",
+                      "ciptxt":"",
+                      "produce":""}],"ret_code":0,"remark":"success","showapi_fee_code":0}
+                }
+             */
             if(res.showapi_res_code === 0){
               if(res.showapi_res_body.ret_code === 0){
                 const resBookData = res.showapi_res_body.data;
                 // 查询成功
                 _this.dialogFormByCameraVisible = true;
-                _this.$message.success('查询成功,请手动输入库存！')
+                _this.$message.success('查询成功,请手动输入其它信息！')
                 console.log(res)
 
                 _this.dialogFormByCameraVideo={
-                  isbn:resBookData.isbn,
+                  bookIsbn:resBookData.isbn,
                   bookName:resBookData.title,
-                  bookCategory:resBookData.format,
+                  // bookCategory:resBookData.format,
                   bookPrice:resBookData.price,
                   bookPub:resBookData.publisher,
                   bookAuthor: resBookData.author,
                 }
+                // FIXME 由于目前的第三方接口无法查询图书类别，直接要求用户输入
+                // const CategoryJSON={
+                //   "A":"马克思主义、列宁主义、毛泽东思想、邓小平理论",
+                //   "B":"哲学、宗教",
+                //   "C":"社会科学总论",
+                //   "D":"政治、法律",
+                //   "E":"军事",
+                //   "F":"经济",
+                //   "G":"文化、科学、教育、体育",
+                //   "H":"语言、文字",
+                //   "I":"文学",
+                //   "J":"艺术",
+                //   "K":"历史、地理",
+                //   "N":"自然科学总论",
+                //   "O":"数理科学和化学",
+                //   "P":"天文学、地球科学",
+                //   "Q":"生物科学",
+                //   "R":"医药、卫生",
+                //   "S":"农业科学",
+                //   "T":"工业技术",
+                //   "U":"交通运输",
+                //   "V":"航空、航天",
+                //   "X":"环境科学、安全科学",
+                //   "Z":"综合性图书"
+                // }
                 console.log(_this.dialogFormByCameraVideo)
               }else{
                 _this.$message.error(res.showapi_res_body.remark)
@@ -829,6 +942,7 @@
       },
       editRow(item){
           // 初始化表单数据
+          console.log(item)
           this.dialogForm = item;
           // this.dialogForm.bookPub = item.pubName;
           // // this.$delete(this.dialogForm,'pubName');
