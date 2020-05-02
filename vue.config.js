@@ -1,5 +1,5 @@
 module.exports = {
-  // publicPath: './',
+  publicPath: './',
   lintOnSave: false,
   devServer: {
     https: false,
@@ -7,7 +7,6 @@ module.exports = {
       // 请求ShowApi接口
       '/api/showapi': {
         target: 'http://route.showapi.com/1626-1',
-        // target: 'http://route.showapi.com/2218-1',
         changeOrigin: true,
         pathRewrite: {
           '^/api/showapi': ''

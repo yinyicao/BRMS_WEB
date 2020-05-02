@@ -37,9 +37,12 @@ const router = new Router({
         {
           path: 'index',
           name: '主页',
-          // 需要有订单查询的权限 TODO 这里先写为book:get
-          meta: {title: '图书分销管理系统', icon: 'el-icon-s-home',permissions:['book:get']},
-          component: () => import( '../views/main')
+          // permissions:['book:get'] 至少要有查询图书的权限
+          meta: {title: '主页', icon: 'el-icon-s-home',permissions:['book:get']},
+          // route level code-splitting
+          // this generates a separate chunk (about.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import(/* webpackChunkName: "about" */ '../views/index')
         },
         {
           path: 'bookList',
@@ -66,7 +69,7 @@ const router = new Router({
           name: '报表统计视图',
           // meta: {title: 'tipoff-record', icon: 'el-icon-alarm-clock', role: 'admin'},
           // permissions:['book:get','publisher:get']要有图书查询的权限或查询出版社
-          meta: {title: '报表统计', icon: 'el-icon-s-data',permissions:['bookPressData:get','bookCategoryData:get']},
+          meta: {title: '报表统计', icon: 'el-icon-s-data',permissions:['bookPressData:get','bookCategoryData:get','disOrder:get']},
           component: Layout,
           // component: () => import(/* webpackChunkName: "about" */ '../views/reports'),
           children:[

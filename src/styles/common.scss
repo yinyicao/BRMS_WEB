@@ -2,7 +2,8 @@ hr {
   height: 1px;
   border: none;
   border-top: 1px solid rgba(0, 21, 41, .08);
-  margin: 20px auto;
+  //margin: 20px auto;
+  margin: 0 auto;
 }
 
 .focusing {
@@ -73,5 +74,9 @@ hr {
 
 .el-form-item {
   margin-bottom: 10px !important;
+}
+
+.el-divider{
+  margin: 0 auto;
 }
 
