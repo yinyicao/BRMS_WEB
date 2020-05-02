@@ -220,7 +220,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="添加" :visible.sync="dialogByCameraVisible"
+    <el-dialog title="扫码添加" :visible.sync="dialogByCameraVisible"
                @close='closeDialogByCamera'
                width="40%" >
       <el-button
@@ -231,59 +231,28 @@
         {{startOrStopScanText}}
       </el-button>
       <video id="video" v-if="CameraVideoVisible" width="50%" height="10%" style="border: 1px solid gray"></video>
-      <el-form :model="dialogForm" :rules="rules"  ref="dialogForm" v-if="dialogFormByCameraVisible">
+      <el-form :model="dialogFormByCameraVideo" :rules="rulesByCameraVideo"  ref="dialogFormByCameraVideo" v-if="dialogFormByCameraVisible">
+        <el-form-item label="ISBN" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
+          <el-input v-model="dialogFormByCameraVideo.isbn" autocomplete="off"></el-input>
+        </el-form-item>
         <el-form-item label="书名" :label-width="formLabelWidth"  prop="bookName" style="height: 44px; width: 400px">
-          <el-input v-model="dialogForm.bookName" autocomplete="off"></el-input>
+          <el-input v-model="dialogFormByCameraVideo.bookName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="类别" :label-width="formLabelWidth"  prop="bookCategory" style="height: 44px;">
-          <!--          <el-input v-model="dialogForm.bookCategory" autocomplete="off"></el-input>-->
-          <el-select v-model="dialogForm.bookCategory" placeholder="请选择"
-                     size="small"
-                     style="width: 290px"
-                     :filterable= "true"
-                     :clearable = "true"
-                     v-on:visible-change="querySelectBookCategory"
-                     :loading="bookCategorySelectLoading"
-                     loading-text="加载中..."
-          >
-            <el-option
-              v-for="item in bookCategoryOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+        <el-form-item label="类别" :label-width="formLabelWidth"  prop="bookCategory" style="height: 44px;width: 400px">
+          <el-input v-model="dialogFormByCameraVideo.bookCategory" autocomplete="off"></el-input>
         </el-form-item>
-
         <el-form-item label="价格" :label-width="formLabelWidth"  prop="bookPrice" style="height: 44px;width: 400px" required>
-          <el-input type="number" v-model="dialogForm.bookPrice" autocomplete="off" ></el-input>
+          <el-input type="number" v-model="dialogFormByCameraVideo.bookPrice" autocomplete="off" ></el-input>
         </el-form-item>
         <el-form-item label="作者" :label-width="formLabelWidth"  prop="bookAuthor" style="height: 44px;width: 400px" required>
-          <el-input v-model="dialogForm.bookAuthor" autocomplete="off"></el-input>
+          <el-input v-model="dialogFormByCameraVideo.bookAuthor" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="出版社" :label-width="formLabelWidth"  prop="bookPub" style="height: 44px;width: 400px">
-          <!--          <el-input v-model="dialogForm.bookPub" autocomplete="off"></el-input>-->
-          <el-select v-model="dialogForm.bookPub" placeholder="请选择"
-                     :filterable= "true"
-                     :clearable = "true"
-                     size="small"
-                     style="width: 290px"
-                     v-on:visible-change="querySelectBookPub"
-                     :loading="bookPubSelectLoading"
-                     loading-text="加载中..."
-          >
-            <el-option
-              v-for="item in bookPubOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
+          <el-input v-model="dialogFormByCameraVideo.bookPub" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="库存" :label-width="formLabelWidth"  prop="bookRepertorySize" style="height: 44px;width: 400px" >
           <!--          <el-input type="number" v-model="dialogForm.bookRepertorySize" autocomplete="off"></el-input>-->
-          <el-input-number v-model="dialogForm.bookRepertorySize"
+          <el-input-number v-model="dialogFormByCameraVideo.bookRepertorySize"
                            :min="1"
                            :max="1000"
                            size="small"
@@ -292,9 +261,10 @@
           ></el-input-number>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-if="dialogFormByCameraVisible">
+        <el-button @click="dialogFormByCameraReset">重 置</el-button>
         <el-button @click="dialogByCameraVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onSubmit('dialogForm')">确 定</el-button>
+        <el-button type="primary" @click="onSubmitByCamera('dialogFormByCameraVideo')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -362,6 +332,7 @@
         dialogStatus: "",
         list: [],
         dialogForm: {},
+        dialogFormByCameraVideo:{},
         labelPosition: 'right',
         bookList: [],
         page: {
@@ -390,6 +361,30 @@
           ],
           bookPub: [
             {type: 'number', required: true, message: '请输入出版社'}
+          ]
+        },
+        rulesByCameraVideo: {
+          bookName: [
+            {type: 'string', required: true, message: '请输入书名'}
+          ],
+          bookCategory: [
+            // {type: 'string', required: true, message: '请输入类别', trigger: 'change'}
+            {type: 'string', required: true, message: '请输入类别'}
+          ],
+          bookPrice: [
+            // {required: true, message: '请输入价格', trigger: 'blur'}
+            {type: 'string', required: true, message: '请输入价格'}
+            // { validator: validateprice,type: 'string'}
+          ],
+          bookAuthor: [
+            {type: 'string', required: true, message: '请输入作者'}
+            // { validator: validateAuthor,type: 'string'}
+          ],
+          bookRepertorySize: [
+            {required: true, message: '请输入库存'}
+          ],
+          bookPub: [
+            {type: 'string', required: true, message: '请输入出版社'}
           ]
         }
       }
@@ -595,6 +590,25 @@
             }
           });
         },
+      onSubmitByCamera(dialogFormByCameraVideo){
+        this.$refs[dialogFormByCameraVideo].validate((valid) => { //表单验证
+          if (valid) {
+              this.$http.post('book/addBookByCamera', this.dialogFormByCameraVideo).then(res => {
+                if (res.code === 10005) {
+                  this.dialogFormByCameraVisible = false;
+                  this.getBookList();
+                  this.$message.success(res.msg)
+                }else{
+                  this.$message.error(res.msg)
+                }
+
+              })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
       addRow(){
           this.dialogFormVisible = true;
           this.dialogStatus = '添加';
@@ -617,6 +631,21 @@
         });
         return loading;
       },
+      dialogFormByCameraReset(){
+        const _this = this;
+        console.log('dialogFormByCameraReset...')
+        // 按钮状态为stop
+        _this.startOrStop = 'stop'
+        // 按钮文字
+        _this.startOrStopScanText = '开始扫描'
+        // 不显示接收视频的video
+        _this.CameraVideoVisible = false;
+        // 关闭表单显示
+        _this.dialogFormByCameraVisible = false;
+        // 重置codeReader关闭摄像头扫描
+        if(_this.codeReader!=null)
+          _this.codeReader.reset()
+      },
       closeDialogByCamera(){
         const _this = this;
         console.log('closeDialogByCamera')
@@ -626,6 +655,8 @@
         _this.startOrStopScanText = '开始扫描'
         // 不显示接收视频的video
         _this.CameraVideoVisible = false;
+        // 重置表单数据
+        _this.dialogFormByCameraVideo={};
         // 关闭表单显示
         _this.dialogFormByCameraVisible = false;
         // 重置codeReader关闭摄像头扫描
@@ -657,6 +688,8 @@
           _this.startOrStopScanText = '停止扫描'
           // 显示接收视频的video
           _this.CameraVideoVisible = true
+          // 关闭表单显示
+          // _this.dialogFormByCameraVisible = false;
         }
         // 扫码成功
         function scanSuccess(result) {
@@ -712,20 +745,27 @@
                 }
              */
             if(res.showapi_res_code === 0){
-              // 查询成功
-              _this.dialogFormByCameraVisible = true;
-              _this.$message.success('查询成功,请手动输入库存！')
-              console.log(res)
-              const resBookData = res.showapi_res_body.data;
-              _this.dialogForm={
-                bookName:resBookData.title,
-                bookCategory:resBookData.format,
-                bookPrice:resBookData.price,
-                bookPub:resBookData.publisher,
-                bookAuthor: resBookData.author,
+              if(res.showapi_res_body.ret_code === 0){
+                const resBookData = res.showapi_res_body.data;
+                // 查询成功
+                _this.dialogFormByCameraVisible = true;
+                _this.$message.success('查询成功,请手动输入库存！')
+                console.log(res)
+
+                _this.dialogFormByCameraVideo={
+                  isbn:resBookData.isbn,
+                  bookName:resBookData.title,
+                  bookCategory:resBookData.format,
+                  bookPrice:resBookData.price,
+                  bookPub:resBookData.publisher,
+                  bookAuthor: resBookData.author,
+                }
+                console.log(_this.dialogFormByCameraVideo)
+              }else{
+                _this.$message.error(res.showapi_res_body.remark)
+                console.log(res)
               }
-              // FIXME 显示到页面
-              console.log(_this.dialogForm)
+
             }else{
               // 查询失败
               /**
