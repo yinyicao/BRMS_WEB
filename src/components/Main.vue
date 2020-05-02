@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div class="app-wrapper" :class="classObj">
       <sidebar class="sidebar-container"></sidebar>
       <div v-if="$store.state.device==='mobile'&&$store.state.opened" class="drawer-bg" @click="handleClickOutside"/>
@@ -8,6 +7,7 @@
         <div class="fixed-header">
           <header-bar/>
         </div>
+        <!--FIXME 出现滚动条不美观-->
         <div class="m-t-50">
           <tags-view/>
           <div class="p-20">

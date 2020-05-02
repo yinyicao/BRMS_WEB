@@ -41,6 +41,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="角色权限" style="margin-left: 10px">
+            <!--FIXME 出现滚动条不美观-->
               <el-transfer
                 style="width: 80%;text-align: left; display: inline-block;"
                 v-model="roleForm.existingPermissions"
