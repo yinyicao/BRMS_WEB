@@ -7,7 +7,7 @@
     element-loading-background="rgba(0, 0, 0, 0.8)"
   >
     <el-row>
-      <el-col :span="24">
+      <el-col :span="18">
         <el-form :label-position="labelPosition" :rules="rules" :model="roleForm" ref="roleForm" inline-message>
           <el-form-item label="角色名称" prop="roleName" required>
             <el-select v-model="roleForm.roleName"
@@ -64,6 +64,16 @@
             </div>
           </el-form-item>
         </el-form>
+      </el-col>
+      <el-col :span="6">
+        <div style="font-size: 14px;">
+          <span style="color: #FEC171;font-size: 16px">⚠温馨提示：</span>
+          <el-divider></el-divider>
+          <span>1.权限关系到资源访问权限，请谨慎修改;</span>
+          <el-divider></el-divider>
+          <span>2.权限修改后，用户需重新登录才可生效。</span>
+          <el-divider></el-divider>
+        </div>
       </el-col>
     </el-row>
 
@@ -276,24 +286,6 @@
           setTimeout(function(){
             //消失锁屏
             _this.loading = false
-            //显示通知
-            const h = _this.$createElement;
-
-            _this.$notify({
-              title: '⚠警告',
-              type: 'warning',
-              duration: 2000,
-              message: h('div', { style: 'color: teal'}, '权限关系到角色访问，请谨慎修改')
-            });
-
-
-            _this.$notify({
-              title: '⚠警告',
-              type: 'warning',
-              duration: 5000,
-              offset: 100,
-              message: h('div', { style: 'color: teal'}, '权限修改后，用户重新登录后生效')
-            });
 
           })
           },500)
