@@ -72,7 +72,7 @@
       methods:{
           getSiteData(){
             this.$http.get('/main/getSiteData').then(res => {
-              console.log(res)
+              // console.log(res)
               if (res.code === 10002) { //查询成功
                 this.siteData = res.data;
                 this.getDataTime = this.$timeFormat(new Date(),null);

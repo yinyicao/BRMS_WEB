@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
 /**
- * 登录验证的Token信息,由JWT改为shiro后本文件无用
+ * 登录验证的Token信息,JWT+Shiro
  * @type {string}
  */
 const TokenKey = 'Admin-Token'

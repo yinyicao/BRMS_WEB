@@ -57,8 +57,12 @@
       logout() {
         this.$confirm('确认退出登录？')
           .then(() => {
-            this.$http.get('/logout').then(res =>{ //请求登出接口
+            // 请求shiro自带的登出接口,FIXME: 退出登录后，token在有效期内仍然可以请求数据
+            // 出现该问题的原因是由于使用Jwt集成了shiro,所以后端token并没有被清除
+            // 解决方法：可以将token存在内存数据库(如redis)中，验证token前先验证数据库中是否存在，退出登录时删除token。
+            this.$http.get('/logout').then(res =>{
                 this.$store.dispatch('removeStorage')
+                removeToken()
                 this.$router.replace('/')
             })
           })

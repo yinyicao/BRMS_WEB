@@ -50,8 +50,8 @@
               return true
             }
           })
-          console.log(havePermissions)
-          console.log(requirePermissions)
+          // console.log(havePermissions)
+          // console.log(requirePermissions)
         }
         return res;
       }

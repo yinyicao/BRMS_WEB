@@ -3,15 +3,16 @@ import qs from 'qs';
 import router from '../router/index'
 import {Msg} from './MessageTipsUtil'
 import store from "../store";
+import {getToken} from './auth'
 
 // Set config defaults when creating the instance
 axios.defaults.baseURL = '/api/'
 // axios.defaults.baseURL = 'http://book.yinyicao.work/SSM/'
-// 请求带上cookies
-axios.defaults.withCredentials = true
-//获取Token值为undefined,是因为这个语句在登录操作之前运行（main.js导入http.js，而main又是程序的入口-最开始执行）
-//所以获取不到Token?
-// axios.defaults.headers.common['Token'] =  getToken();
+// 请求带上cookies（后端必须设置允许携带Access-Control-Allow-Credentials）
+// axios.defaults.withCredentials = true
+// 只有在页面刷新时才会重新调用getToken()，用于解决页面刷新时header
+axios.defaults.headers.common['Token'] =  getToken();
+console.log("http.js--token:"+getToken())
 
 
 export default {
@@ -56,7 +57,7 @@ axios.interceptors.response.use(
         case 401:
           if (resData.code == 2002){//未登录授权
             // Msg.warn(resData.msg)
-            Msg.warn("您未登录或超时!")
+            Msg.warn(resData.msg)
             // 清除信息并跳转到登录页面
             store.dispatch("removeStorage").then(r => {
               router.replace('/login');
