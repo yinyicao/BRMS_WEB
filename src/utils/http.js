@@ -11,8 +11,7 @@ axios.defaults.baseURL = '/api/'
 // 请求带上cookies（后端必须设置允许携带Access-Control-Allow-Credentials）
 // axios.defaults.withCredentials = true
 // 只有在页面刷新时才会重新调用getToken()，用于解决页面刷新时header
-axios.defaults.headers.common['Token'] =  getToken();
-console.log("http.js--token:"+getToken())
+// axios.defaults.headers.common['Token'] =  getToken();
 
 
 export default {
@@ -45,6 +44,17 @@ export default {
   }
 }
 
+// // http request 拦截器 在发送请求之前做某件事
+axios.interceptors.request.use(config => {
+  if (store.state.userinfo && store.state.userinfo.token) {
+    config.headers.common['Token'] = store.state.userinfo.token;
+  }
+  return config
+},error =>{
+  Msg.warn("错误的传参!")
+  return Promise.reject(error)
+})
+
 // http response 拦截器 ,拦截（token过期），重新登录
 axios.interceptors.response.use(
   response => {
@@ -59,7 +69,7 @@ axios.interceptors.response.use(
             // Msg.warn(resData.msg)
             Msg.warn(resData.msg)
             // 清除信息并跳转到登录页面
-            store.dispatch("removeStorage").then(r => {
+            store.dispatch("removeUserInfo").then(r => {
               router.replace('/login');
             })
           }else{ //没有权限操作

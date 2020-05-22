@@ -16,16 +16,23 @@ const store = new Vuex.Store({
   },
   getters: {
     getStorage(state) {
-      console.log("getStorage--->has state.userinfo:"+!state.userinfo)
+      // console.log("before refresh--->state.userinfo in vuex："+JSON.stringify(state.userinfo))
       if (!state.userinfo) {
         state.userinfo = JSON.parse(sessionStorage.getItem('userinfo'))
       }
+      // console.log("refresh back--->state.userinfo in vuex："+JSON.stringify(state.userinfo))
       return state.userinfo
     }
   },
   mutations: {
     USERINFO(state, data) {
       state.userinfo = data
+    },
+    REMOVEUSERINFO(state) {
+      state.userinfo = null
+    },
+    REMOVETOKEN(state) {
+      state.userinfo.token = null
     },
     toggleState(state) {
       state.opened = !state.opened

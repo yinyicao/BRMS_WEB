@@ -9,6 +9,7 @@
     name: 'App',
     mounted () {
       console.log("mounted method is running in App.vue file.")
+      // 防止页面刷新后vuex中的userinfo重置，从sessionStorage中取出userinfo
       this.$store.getters.getStorage
     }
   }

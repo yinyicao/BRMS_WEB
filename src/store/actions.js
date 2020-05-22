@@ -1,19 +1,27 @@
-import axios from 'axios'
 
-const userinfo = function (obj) {
+
+const saveUserinfo = function (obj) {
   return new Promise((resolve => {
-    //用户登录时已经返回足够的数据，这里不再需要去请求
+    // 保存到sessionStorage
     sessionStorage.setItem('userinfo', JSON.stringify(obj))
     resolve(obj)
-    // axios.post('/main/setUserInfo/' + obj).then(res => {
-    //   if (res.status) {
-    //     window.localStorage.setItem('userinfo', JSON.stringify(res.data.data))
-    //     resolve(res.data.data)
-    //   }
-    //
-    // }).catch((error) => {
-    //   console.log(error)
-    // })
+  }))
+}
+
+const removeUserinfo = function () {
+  return new Promise((resolve => {
+    sessionStorage.removeItem('userinfo')
+    resolve(true)
+  }))
+}
+
+const removeToken = function () {
+  return new Promise((resolve => {
+    // 只删除userinfo中的token
+    let userinfo = JSON.parse(sessionStorage.getItem('userinfo'))
+    userinfo.token = null
+    sessionStorage.setItem('userinfo', JSON.stringify(userinfo))
+    resolve(true)
   }))
 }
 
@@ -21,16 +29,30 @@ export default {
 
   setUserInfo({commit}, obj) {
     return new Promise((resolve => {
-      userinfo(obj).then(res => {
+      // 先保存到sessionStorage中
+      saveUserinfo(obj).then(res => {
         commit('USERINFO', res);
         resolve()
       })
     }))
 
   },
-  removeStorage(state) {
-    state.userinfo = null
-    sessionStorage.removeItem('userinfo')
+  removeUserInfo({commit}) {
+    return new Promise((resolve => {
+      // 先删除sessionStorage中的信息
+      removeUserinfo().then(res =>{
+        commit('REMOVEUSERINFO');
+        resolve()
+      })
+    }))
+  },
+  removeToken({commit}) {
+    return new Promise((resolve => {
+      removeToken().then(res =>{
+        commit('REMOVETOKEN');
+        resolve()
+      })
+    }))
   },
   deleteViewRoute({commit, state}, obj) {
     return new Promise(resolve => {

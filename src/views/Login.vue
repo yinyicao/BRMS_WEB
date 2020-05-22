@@ -163,12 +163,12 @@
                 this.loading = false
                 if (res.code === 2000) { //登录成功
                   this.$message.success(res.msg)
-                  if (setToken(res.data.token)){//浏览器Cookies开启，存储成功
-                    //将Token设置到每次请求的header中
-                    axios.defaults.headers.common['Token'] =  getToken();
-                  } else {
-                    axios.defaults.headers.common['Token'] =  res.data.token;
-                  }
+                  // if (setToken(res.data.token)){//浏览器Cookies开启，存储成功
+                  //   //将Token设置到每次请求的header中
+                  //   axios.defaults.headers.common['Token'] =  getToken();
+                  // } else {
+                  //   axios.defaults.headers.common['Token'] =  res.data.token;
+                  // }
                   // let id = res.data.user.id;
                   let data = res.data;
                   //获取用户信息存储到全局变量中
