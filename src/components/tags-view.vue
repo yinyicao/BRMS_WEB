@@ -13,8 +13,6 @@
         {{item.title}}
       </el-tag>
     </div>
-<!--    <hr class="m-t-0">-->
-<!--    <el-divider><i class="el-icon-reading"></i>图书分销管理系统</el-divider>-->
     <el-divider></el-divider>
   </div>
 </template>

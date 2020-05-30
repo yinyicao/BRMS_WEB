@@ -3,15 +3,12 @@ import qs from 'qs';
 import router from '../router/index'
 import {Msg} from './MessageTipsUtil'
 import store from "../store";
-import {getToken} from './auth'
 
 // Set config defaults when creating the instance
 axios.defaults.baseURL = '/api/'
 // axios.defaults.baseURL = 'http://book.yinyicao.work/SSM/'
 // 请求带上cookies（后端必须设置允许携带Access-Control-Allow-Credentials）
 // axios.defaults.withCredentials = true
-// 只有在页面刷新时才会重新调用getToken()，用于解决页面刷新时header
-// axios.defaults.headers.common['Token'] =  getToken();
 
 
 export default {

@@ -26,34 +26,40 @@
           type="index">
         </el-table-column>
         <el-table-column
+          prop="bookIsbn"
+          label="ISBN"
+          width="110px"
+          align="center">
+        </el-table-column>
+        <el-table-column
           prop="bookName"
           label="书名"
-          width="150px"
+          width="200px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="categoryName"
           label="类别"
-          width="100px"
+          width="90px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="bookPrice"
           label="价格"
-          width="100px"
+          width="80px"
           align="center">
         </el-table-column>
 
         <el-table-column
           prop="bookAuthor"
           label="作者"
-          width="80px"
+          width="90px"
           align="center">
         </el-table-column>
         <el-table-column
           prop="bookRepertorySize"
           label="库存"
-          width="100px"
+          width="80px"
           align="center">
         </el-table-column>
         <el-table-column
@@ -72,14 +78,6 @@
               size="small">
               分销
             </el-button>
-<!--            <el-button-->
-<!--              @click.native.prevent="delRow(scope.row)"-->
-<!--              type="danger"-->
-<!--              icon="el-icon-delete"-->
-<!--              size="small">-->
-<!--              删除-->
-<!--            </el-button>-->
-
           </template>
         </el-table-column>
       </el-table>

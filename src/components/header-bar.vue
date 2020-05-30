@@ -26,8 +26,6 @@
 </template>
 
 <script>
-  import {removeToken} from '../utils/auth'
-  import {Msg} from "../utils/MessageTipsUtil";
 
   export default {
     name: 'header-bar',
