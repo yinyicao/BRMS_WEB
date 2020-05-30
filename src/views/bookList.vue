@@ -313,8 +313,8 @@
     data() {
       let validateAuthor = (rule, value, callback) => { //作者字段自定义验证规则
         if (value === undefined || value === "") {
-          callback(new Error('请输入作者'));
-        } else if(! /^[\u4E00-\u9FA5\uf900-\ufa2d·s]{2,20}$/.test(value)){
+          callback(new Error('请输入作者,多个以空格分开'));
+        } else if(! /^[\u4E00-\u9FA5\uf900-\ufa2d\u0020·s]{2,20}$/.test(value)){
           callback(new Error('名字必须为2-20个汉字'));
         }else{
           callback();
