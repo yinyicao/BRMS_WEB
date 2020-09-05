@@ -755,8 +755,8 @@
           // 构造请求对象
           let obj = {
             "showapi_timestamp": showApiforMatterDateTime(), //注意要使用当前时间。服务器只处理时间误差10分钟以内的请求
-            "showapi_appid": '202232', //这里需要改成自己的appid
-            "showapi_sign": '38a08bd2d39e4588a729eefcee827b0d',  //这里需要改成自己的密钥
+            "showapi_appid": 'id', //TODO:这里需要改成自己的appid
+            "showapi_sign": 'sign',  //TODO:这里需要改成自己的密钥
             "isbn": isbn //ISBN号
           }
           // 请求showapi.com接口 根据isbn查询图书
